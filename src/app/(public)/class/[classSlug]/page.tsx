@@ -10,8 +10,6 @@ import { ArrowRight, BookOpen, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export const revalidate = 60 * 60 * 24 * 30; // Revalidate every 1 month
-
 interface ClassPageProps {
   params: Promise<{ classSlug: string }>;
 }

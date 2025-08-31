@@ -19,8 +19,6 @@ import {
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export const revalidate = 60 * 60 * 24 * 30; // Revalidate every 1 month
-
 interface SubjectPageProps {
   params: Promise<{ classSlug: string; subjectSlug: string }>;
 }
