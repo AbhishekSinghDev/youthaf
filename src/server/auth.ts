@@ -32,6 +32,8 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  baseURL: env.BETTER_AUTH_URL,
+  secret: env.BETTER_AUTH_SECRET,
   plugins: [
     emailOTP({
       otpLength: EMAIL_LOGIN_OTP_LENGTH,
