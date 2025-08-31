@@ -32,7 +32,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  baseURL: env.BETTER_AUTH_URL,
+  baseURL: env.NEXT_PUBLIC_BETTER_AUTH_URL,
   secret: env.BETTER_AUTH_SECRET,
   plugins: [
     emailOTP({
