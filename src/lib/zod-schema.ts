@@ -89,3 +89,9 @@ export const NoteCreationSchema = z4.object({
     .optional()
     .default([]),
 });
+
+export const SignupSchema = z4.object({
+  name: z4.string().min(2, "Name must be at least 2 characters"),
+  email: z4.string().email("Please enter a valid email address"),
+  password: z4.string().min(8, "Password must be at least 8 characters"),
+});

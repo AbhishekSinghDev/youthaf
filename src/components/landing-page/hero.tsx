@@ -1,47 +1,93 @@
-import { ArrowRight, Calendar } from "lucide-react";
-import Image from "next/image";
-import { Button } from "../ui/button";
+"use client";
+
+import { IconBrandYoutube } from "@tabler/icons-react";
+import { motion } from "framer-motion";
+import { BookOpen } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Hero() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
-    <section id="hero" className="card my-8 relative overflow-hidden shadow-md">
-      <div className="p-8 md:p-10 lg:p-12 flex flex-col md:flex-row items-start">
-        {/* Text content - takes full width on mobile */}
-        <div className="w-full lg:w-3/5 z-10">
-          <h1 className="text-black dark:text-white text-5xl md:text-7xl font-bold">
-            Platform for
-            <span className="block text-[#7A7FEE] dark:text-[#7A7FEE]">
-              Skill Development
-            </span>
-          </h1>
-          <p className="my-6 text-sm md:text-lg max-w-sm text-gray-700 dark:text-gray-300">
-            We build high-quality, scalable platforms—client portals,
-            marketplaces, AI automations, and SaaS—using the best tools for the
-            job, no shortcuts.
-          </p>
-          <div className="flex flex-wrap items-center gap-4">
-            <Button>
-              <Calendar className="mr-1 h-4 w-4" />
-              Schedule Discovery Call
-            </Button>
-            <Button variant="secondary">
-              <ArrowRight className="mr-1 h-4 w-4" />
-              Learn more
-            </Button>
+    <>
+      <section className="relative overflow-hidden min-h-[50vh] flex flex-col">
+        <div className="container mx-auto px-4 py-12 relative z-10 flex-1 flex flex-col">
+          <div className="text-center flex-1 flex flex-col items-center justify-center">
+            {/* Main Heading */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="mb-8 flex items-center gap-3"
+            >
+              <IconBrandYoutube className="size-11 lg:size-18 text-red-500" />
+              <h1
+                id="main-title"
+                className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl"
+              >
+                Youth AF
+              </h1>
+            </motion.div>
+
+            {/* Description */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground"
+            >
+              No fluff. No overcomplications. Just solid CS learning.
+            </motion.p>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex flex-col items-center gap-6"
+            >
+              {/* Get started button */}
+              <div className="flex items-center justify-center">
+                <Link href="#start">
+                  <div className="group cursor-pointer border border-border bg-card gap-2 h-[60px] flex items-center p-[10px] rounded-full">
+                    <div className="border border-border bg-primary h-[40px] rounded-full flex items-center justify-center text-primary-foreground">
+                      <p className="font-medium tracking-tight mr-3 ml-3 flex items-center gap-2 justify-center text-base">
+                        <BookOpen className="w-[18px] h-[18px]" />
+                        Start Learning
+                      </p>
+                    </div>
+                    <div className="text-muted-foreground group-hover:ml-4 ease-in-out transition-all size-[24px] flex items-center justify-center rounded-full border-2 border-border">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="lucide lucide-arrow-right group-hover:rotate-180 ease-in-out transition-all"
+                      >
+                        <path d="M5 12h14"></path>
+                        <path d="m12 5 7 7-7 7"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            </motion.div>
           </div>
         </div>
-
-        {/* Image - hidden on mobile, visible on md and up */}
-        <div className="hidden lg:block lg:w-2/5 lg:absolute lg:right-0 lg:top-0 lg:bottom-0 lg:flex lg:items-center">
-          <Image
-            src="/brackets.png"
-            alt="Purple Wave"
-            width={500}
-            height={500}
-            className="w-full h-auto md:h-full md:w-auto md:object-cover md:object-left invert-0 dark:invert"
-          />
-        </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

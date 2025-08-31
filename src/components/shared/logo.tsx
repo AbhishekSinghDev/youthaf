@@ -1,5 +1,8 @@
+"use client";
+
 import { cn } from "@/lib/utils";
-import { IconBracketsContain } from "@tabler/icons-react";
+import { useTheme } from "next-themes";
+import Image from "next/image";
 import Link from "next/link";
 
 interface LogoProps {
@@ -18,15 +21,21 @@ const Logo = ({
   className,
   iconClassName,
   textClassName,
-  brandName = "Skillex",
+  brandName = "YouthAF",
   iconSize = 24,
 }: LogoProps) => {
+  const { theme } = useTheme();
+
   return (
     <Link href={href} className={cn("flex items-center gap-2", className)}>
-      <IconBracketsContain
-        size={iconSize}
-        className={cn("flex-shrink-0 text-primary", iconClassName)}
-      />
+      <div className="relative aspect-square size-8 overflow-hidden rounded-full">
+        <Image
+          src={theme === "dark" ? "/youthaf-2.png" : "/youthaf-1.png"}
+          alt={brandName}
+          fill
+          className={cn("flex-shrink-0", iconClassName)}
+        />
+      </div>
       {showBrandName && (
         <span className={cn("font-semibold text-xl truncate", textClassName)}>
           {brandName}

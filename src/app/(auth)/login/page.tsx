@@ -85,7 +85,7 @@ const LoginPage = () => {
               <Logo />
             </Link>
             <h1 className="mb-1 mt-4 text-xl font-semibold">
-              Sign In to Skillex
+              Sign In to YouthAF
             </h1>
             <p>Welcome back! Sign in to continue</p>
           </div>
@@ -152,7 +152,7 @@ const LoginPage = () => {
         <p className="text-accent-foreground text-center text-sm">
           Don&apos;t have an account ?
           <Button asChild variant="link" className="px-2">
-            <Link href="#">Create account</Link>
+            <Link href="/signup">Create account</Link>
           </Button>
         </p>
       </form>

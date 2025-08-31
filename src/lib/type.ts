@@ -64,3 +64,24 @@ export interface ListNote {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface SubjectType {
+  name: string;
+  slug: string;
+  description: string;
+}
+
+export interface ResourceType {
+  name: string;
+  slug: string;
+  description: string;
+  icon: string;
+  color: string;
+}
+
+export interface ClassType {
+  title: string;
+  slug: string;
+  subjects: readonly SubjectType[];
+  resources: readonly ResourceType[];
+}

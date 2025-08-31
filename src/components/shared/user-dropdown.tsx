@@ -33,7 +33,7 @@ const UserDropdown = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <Avatar>
+        <Avatar className="h-8 w-8 rounded-lg">
           <AvatarImage
             src={
               session?.user?.image ??
@@ -100,7 +100,7 @@ const UserDropdown = () => {
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link
-              href="/courses"
+              href="/coming-soon"
               className={cn(pathName === "/courses" && "font-bold bg-accent")}
             >
               <IconDeviceTvOld

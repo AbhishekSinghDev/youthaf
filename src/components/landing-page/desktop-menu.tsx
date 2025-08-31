@@ -14,12 +14,7 @@ const DesktopMenu = () => {
           <NavDropdown
             trigger="Resources"
             items={resourcesDropdownData}
-            columns={2}
-            className={
-              pathname.startsWith("/resources")
-                ? "text-[#7A7FEE] dark:text-[#7A7FEE]"
-                : ""
-            }
+            align="end"
           />
         </li>
       </ul>

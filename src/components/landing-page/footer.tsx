@@ -7,11 +7,11 @@ export default function Footer() {
         <div className="flex flex-col items-center text-center">
           <Logo showBrandName />
           <p className="text-sm text-gray-600 dark:text-gray-400 max-w-md mx-auto mb-8">
-            A platform for skill development and learning.
+            No fluff. No overcomplications. Just solid CS learning.
           </p>
 
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            © {new Date().getFullYear()} Skillex. All rights reserved.
+            © {new Date().getFullYear()} YouthAF. All rights reserved.
           </p>
         </div>
       </div>

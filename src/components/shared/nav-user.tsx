@@ -25,11 +25,9 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import Logout from "./logout";
 
 export function NavUser() {
-  const router = useRouter();
   const { isMobile } = useSidebar();
 
   const { data: session } = authClient.useSession();

@@ -132,6 +132,34 @@ const NotesForm = ({ slug }: NotesFormProps) => {
       },
     });
 
+  const { mutate: deleteThumbnail, isPending: isDeletingThumbnail } =
+    useMutation({
+      mutationKey: ["delete-thumbnail"],
+      mutationFn: async (thumbnailKey: string) => {
+        const response = await fetch("/api/s3/delete", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            key: thumbnailKey,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete thumbnail");
+        }
+
+        return response.json();
+      },
+      onSuccess: () => {
+        toast.success("Thumbnail deleted successfully");
+      },
+      onError: () => {
+        toast.error("Failed to delete thumbnail");
+      },
+    });
+
   const onSubmit = (values: z.infer<typeof NoteCreationSchema>) => {
     if (noteId) {
       updateNote(
@@ -164,6 +192,29 @@ const NotesForm = ({ slug }: NotesFormProps) => {
       fileSize,
     };
     form.setValue("attachments", [...currentAttachments, newAttachment]);
+  };
+
+  const handleThumbnailChange = (newThumbnailKey: string) => {
+    const currentThumbnailKey = form.getValues("thumbnailKey");
+
+    // If there's an existing thumbnail, delete it first
+    if (currentThumbnailKey && currentThumbnailKey !== newThumbnailKey) {
+      deleteThumbnail(currentThumbnailKey);
+    }
+
+    // Update the form with the new thumbnail
+    form.setValue("thumbnailKey", newThumbnailKey);
+  };
+
+  const handleThumbnailDelete = () => {
+    const currentThumbnailKey = form.getValues("thumbnailKey");
+    if (currentThumbnailKey) {
+      deleteThumbnail(currentThumbnailKey, {
+        onSuccess: () => {
+          form.setValue("thumbnailKey", "");
+        },
+      });
+    }
   };
 
   useEffect(() => {
@@ -288,7 +339,7 @@ const NotesForm = ({ slug }: NotesFormProps) => {
             )}
           />
 
-          <div>
+          <div className="space-y-4">
             {/* Note Thumbnail */}
             <FormField
               control={form.control}
@@ -302,26 +353,51 @@ const NotesForm = ({ slug }: NotesFormProps) => {
                   <FormControl>
                     <DNDFileUploader
                       value={field.value}
-                      onChange={field.onChange}
+                      onChange={handleThumbnailChange}
+                      onDelete={handleThumbnailDelete}
                       fileType="image"
+                      allowReplacement={true}
                     />
                   </FormControl>
+                  <FormDescription>
+                    Upload an image to use as the note thumbnail. Maximum file
+                    size: 5MB.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Render Thumbnail */}
+            {/* Current Thumbnail Preview */}
             {form.getValues("thumbnailKey") && (
-              <div>
-                <h4 className="text-sm font-medium mb-2">Current Thumbnail</h4>
-                <Image
-                  src={constructFileUrl(form.getValues("thumbnailKey"))}
-                  alt="Note Thumbnail"
-                  className="w-48 h-48 object-cover rounded"
-                  height={192}
-                  width={192}
-                />
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium">Current Thumbnail</h4>
+                <div className="relative w-full max-w-md mx-auto">
+                  <div className="aspect-video w-full overflow-hidden rounded-lg border bg-muted">
+                    <Image
+                      src={constructFileUrl(form.getValues("thumbnailKey"))}
+                      alt="Note thumbnail preview"
+                      width={400}
+                      height={225}
+                      className="w-full h-full object-cover"
+                      priority
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={handleThumbnailDelete}
+                    disabled={isDeletingThumbnail}
+                  >
+                    {isDeletingThumbnail ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <X className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
               </div>
             )}
           </div>

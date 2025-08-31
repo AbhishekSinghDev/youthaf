@@ -13,8 +13,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Skillex",
-  description: "A platform for skill development and learning.",
+  title: "Youth AF",
+  description: "No fluff. No overcomplications. Just solid CS learning.",
 };
 
 export default function RootLayout({

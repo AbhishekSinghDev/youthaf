@@ -29,14 +29,17 @@ export const auth = betterAuth({
       maxAge: 15 * 60 * 1000, // 15 mins
     },
   },
+  emailAndPassword: {
+    enabled: true,
+  },
   plugins: [
     emailOTP({
       otpLength: EMAIL_LOGIN_OTP_LENGTH,
       async sendVerificationOTP({ email, otp }) {
         await resend.emails.send({
-          from: "Skillex <onboarding@resend.dev>",
+          from: "YouthAF <onboarding@resend.dev>",
           to: [email],
-          subject: "Your Skillex Login Code",
+          subject: "Your YouthAF Login Code",
           html: LoginEmailTemplate({
             email,
             otp,

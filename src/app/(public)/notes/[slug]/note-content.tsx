@@ -6,7 +6,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { ListNote } from "@/lib/type";
 import { constructFileUrl } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, Eye, FileText } from "lucide-react";
+import { formatDate } from "date-fns";
+import { Calendar, FileText } from "lucide-react";
+import Image from "next/image";
 import ErrorState from "./error-state";
 import NoteContentSkeleton from "./note-content-skeleton";
 
@@ -49,18 +51,17 @@ const NoteContent = ({ slug }: { slug: string }) => {
       attachment.fileKey?.toLowerCase().endsWith(".pdf")
     ) || [];
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(new Date(date));
-  };
-
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
+      {/* Banner Section */}
+      <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-muted">
+        <Image
+          src={constructFileUrl(note.thumbnailKey)}
+          alt={note.title}
+          fill
+          className="object-cover"
+        />
+      </div>
       {/* Header Section */}
       <header className="space-y-4 border-b pb-6">
         <div className="space-y-2">
@@ -72,26 +73,8 @@ const NoteContent = ({ slug }: { slug: string }) => {
           <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Calendar className="h-4 w-4" />
-              <span>Created {formatDate(note.createdAt)}</span>
-            </div>
-
-            {note.updatedAt && note.updatedAt !== note.createdAt && (
-              <div className="flex items-center gap-1">
-                <FileText className="h-4 w-4" />
-                <span>Updated {formatDate(note.updatedAt)}</span>
-              </div>
-            )}
-
-            <div className="flex items-center gap-1">
-              <Eye className="h-4 w-4" />
-              <span
-                className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  note.isPublished
-                    ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                    : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-                }`}
-              >
-                {note.isPublished ? "Published" : "Draft"}
+              <span>
+                Published On: {formatDate(note.createdAt, "dd MMMM yyyy")}
               </span>
             </div>
           </div>

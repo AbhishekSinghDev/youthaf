@@ -3,17 +3,10 @@ import { note } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const slug = searchParams.get("slug");
-
-  if (!slug) {
-    return NextResponse.json({ error: "Slug is required" }, { status: 400 });
-  }
-
+export async function GET() {
   try {
-    const noteData = await db.query.note.findFirst({
-      where: eq(note.slug, slug),
+    const noteData = await db.query.note.findMany({
+      where: eq(note.isPublished, true),
       columns: {
         id: true,
         title: true,
@@ -34,11 +27,7 @@ export async function GET(req: Request) {
       },
     });
 
-    if (!noteData?.isPublished) {
-      return NextResponse.json({ message: "Note not found" }, { status: 404 });
-    }
-
-    return NextResponse.json({ note: noteData }, { status: 200 });
+    return NextResponse.json({ notes: noteData }, { status: 200 });
   } catch (error) {
     console.error("Error in GET /api/note:", error);
     return NextResponse.json(

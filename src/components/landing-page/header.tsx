@@ -1,18 +1,17 @@
 import { auth } from "@/server/auth";
-import { IconLogin, IconPlayerPlay } from "@tabler/icons-react";
 import { headers } from "next/headers";
-import Link from "next/link";
 import Logo from "../shared/logo";
 import ThemeToggle from "../shared/toggle-theme";
 import UserDropdown from "../shared/user-dropdown";
-import { Button } from "../ui/button";
-import DesktopMenu from "./desktop-menu";
 import MobileMenu from "./mobile-menu";
+import NavigationLinks from "./navigation-links";
 
 export default async function Header() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+
+  const isAuthenticated = !!session?.user;
 
   return (
     <header className="sticky top-0 z-40 w-full transition-all duration-200 backdrop-blur-xs">
@@ -21,33 +20,15 @@ export default async function Header() {
           <Logo showBrandName />
 
           <div className="flex items-center gap-2">
-            {/* Desktop Navigation */}
-            <DesktopMenu />
-
-            {/* Theme Toggle Button */}
-            <div className="hidden md:block">
+            {/* Desktop Navigation - Hidden on mobile */}
+            <div className="hidden md:flex items-center gap-2">
+              <NavigationLinks isAuthenticated={isAuthenticated} />
               <ThemeToggle />
+              {isAuthenticated && <UserDropdown />}
             </div>
 
-            {session?.user ? (
-              <UserDropdown />
-            ) : (
-              <div className="flex items-center gap-3">
-                <Button variant="outline" asChild>
-                  <Link href="/login">
-                    Login <IconLogin />
-                  </Link>
-                </Button>
-                <Button className="hidden md:flex" asChild>
-                  <Link href="/signup">
-                    Get Started <IconPlayerPlay />
-                  </Link>
-                </Button>
-              </div>
-            )}
-
             {/* Mobile Menu Button */}
-            <MobileMenu />
+            <MobileMenu isAuthenticated={isAuthenticated} />
           </div>
         </div>
       </div>

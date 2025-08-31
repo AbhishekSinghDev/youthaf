@@ -8,8 +8,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
+import { env } from "@/env";
 import { ListNote } from "@/lib/type";
-import { IconEye, IconEyeOff, IconPencil } from "@tabler/icons-react";
+import { IconCopy, IconEye, IconEyeOff, IconPencil } from "@tabler/icons-react";
 import { formatDistanceToNow } from "date-fns";
 import {
   ArrowRight,
@@ -73,6 +74,18 @@ const NoteCard = ({ note }: NoteCardProps) => {
                   <IconEye className="h-4 w-4" />
                   Preview
                 </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  navigator.clipboard.writeText(
+                    `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/notes/${note.slug}`
+                  )
+                }
+              >
+                <>
+                  <IconCopy className="h-4 w-4" />
+                  Copy Link
+                </>
               </DropdownMenuItem>
               <Separator />
               {note.isPublished ? (

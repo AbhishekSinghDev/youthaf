@@ -72,3 +72,197 @@ export const resourcesDropdownData: SubNavItem[][] = [
     },
   ],
 ];
+
+export const subjects = [
+  {
+    name: "Computer Science",
+    slug: "computer-science",
+    description:
+      "Core programming concepts and computational thinking fundamentals",
+  },
+  {
+    name: "Information Practices",
+    slug: "information-practices",
+    description:
+      "Data management principles and digital literacy skills development",
+  },
+  {
+    name: "Information Technology",
+    slug: "information-technology",
+    description: "IT fundamentals covering hardware and software applications",
+  },
+  {
+    name: "Artificial Intelligence",
+    slug: "artificial-intelligence",
+    description:
+      "AI concepts exploration and machine learning basics introduction",
+  },
+  {
+    name: "Computer Applications",
+    slug: "computer-applications",
+    description:
+      "Practical software applications and office productivity tools",
+  },
+] as const;
+
+export const resourceTypes = [
+  {
+    name: "Notes",
+    slug: "notes",
+    description: "Comprehensive study notes and summaries in PDF format",
+    icon: "BookOpen",
+    color: "bg-gradient-to-br from-[#7A7FEE] to-[#9D7FEE]",
+  },
+  {
+    name: "NCERT Books",
+    slug: "ncert-books",
+    description: "Official NCERT textbooks and reference materials",
+    icon: "Book",
+    color: "bg-gradient-to-br from-[#FF6B8B] to-[#FF8E8B]",
+  },
+  {
+    name: "Syllabus",
+    slug: "syllabus",
+    description: "Complete curriculum and course outline",
+    icon: "FileText",
+    color: "bg-gradient-to-br from-[#50C4ED] to-[#7A7FEE]",
+  },
+  {
+    name: "Previous Year Papers",
+    slug: "previous-year-papers",
+    description: "Past exam papers and question banks",
+    icon: "FileQuestion",
+    color: "bg-gradient-to-br from-[#FFB347] to-[#FF8E8B]",
+  },
+  {
+    name: "Recommended books",
+    slug: "recommended-books",
+    description: "A curated list of recommended books for further reading.",
+    icon: "BookOpen",
+    color: "bg-gradient-to-br from-[#7A7FEE] to-[#9D7FEE]",
+  },
+] as const;
+
+export const classesData = {
+  "class-9": {
+    title: "Class 9",
+    slug: "class-9",
+    subjects: subjects,
+    resources: resourceTypes,
+  },
+  "class-10": {
+    title: "Class 10",
+    slug: "class-10",
+    subjects: subjects,
+    resources: resourceTypes,
+  },
+  "class-11": {
+    title: "Class 11",
+    slug: "class-11",
+    subjects: subjects,
+    resources: resourceTypes,
+  },
+  "class-12": {
+    title: "Class 12",
+    slug: "class-12",
+    subjects: subjects,
+    resources: resourceTypes,
+  },
+} as const;
+
+// Navigation menu data
+export const navigationMenuData = {
+  classes: {
+    title: "Classes",
+    description: "Choose your class to access study materials",
+    items: [
+      {
+        title: "Class 9",
+        href: "/class-9",
+        description: "Foundation level computer science concepts",
+      },
+      {
+        title: "Class 10",
+        href: "/class-10",
+        description: "Core programming and IT fundamentals",
+      },
+      {
+        title: "Class 11",
+        href: "/class-11",
+        description: "Advanced concepts and practical applications",
+      },
+      {
+        title: "Class 12",
+        href: "/class-12",
+        description: "Comprehensive preparation for board exams",
+      },
+    ],
+  },
+  quickLinks: [
+    {
+      title: "Discover Notes",
+      href: "/notes",
+      description: "Explore all available notes",
+      icon: "Search",
+      color: iconColors.resources.blog,
+    },
+    {
+      title: "All Subjects",
+      href: "/subjects",
+      description: "Browse subjects across all classes",
+      icon: "BookOpen",
+      color: iconColors.resources.caseStudies,
+    },
+    {
+      title: "Practice Tests",
+      href: "/coming-soon",
+      description: "Test your knowledge with quizzes",
+      icon: "FileQuestion",
+      color: iconColors.resources.tutorials,
+    },
+    {
+      title: "Study Plans",
+      href: "/coming-soon",
+      description: "Structured learning paths",
+      icon: "Calendar",
+      color: iconColors.resources.documentation,
+    },
+  ],
+  resources: [
+    {
+      title: "Recommended Books",
+      description: "A curated list of recommended books for further reading.",
+      href: "https://www.amazon.com/",
+      icon: LayoutGrid,
+      color: iconColors.resources.blog,
+      external: false,
+    },
+  ],
+};
+
+// Helper functions for easy data access
+export const getClassBySlug = (slug: string) => {
+  return Object.values(classesData).find(
+    (classInfo) => classInfo.slug === slug
+  );
+};
+
+export const getSubjectBySlug = (subjectSlug: string) => {
+  return subjects.find((subject) => subject.slug === subjectSlug);
+};
+
+export const getResourceBySlug = (resourceSlug: string) => {
+  return resourceTypes.find((resource) => resource.slug === resourceSlug);
+};
+
+export const getAllClassSlugs = () => {
+  return Object.values(classesData).map((classInfo) => classInfo.slug);
+};
+
+export const getAllSubjectSlugs = () => {
+  return subjects.map((subject) => subject.slug);
+};
+
+export const getAllResourceSlugs = () => {
+  return resourceTypes.map((resource) => resource.slug);
+};
