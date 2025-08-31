@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  IconBook2,
   IconBrandTelegram,
   IconBrandYoutube,
   IconGlobe,
@@ -26,6 +27,16 @@ export default function NavigationLinks({
 
   return (
     <div className={isMobile ? "flex flex-col space-y-1 w-full" : "contents"}>
+      {/* About US */}
+      <Link
+        href="/about-us"
+        className={`${buttonVariants({ variant: "ghost" })} ${linkClass}`}
+        onClick={onLinkClick}
+      >
+        <IconBook2 className="mr-2 h-4 w-4" />
+        About Me
+      </Link>
+
       {/* YouTube Link */}
       <Link
         href="https://www.youtube.com/@YouthAf"

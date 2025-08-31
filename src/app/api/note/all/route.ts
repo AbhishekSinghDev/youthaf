@@ -1,12 +1,27 @@
+import { Class, Subject } from "@/lib/type";
 import { db } from "@/server/db";
 import { note } from "@/server/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const classParam = searchParams.get("class") as Class | null;
+  const subjectParam = searchParams.get("subject") as Subject | null;
+
   try {
+    const whereConditions = [eq(note.isPublished, true)];
+
+    if (classParam) {
+      whereConditions.push(eq(note.class, classParam));
+    }
+
+    if (subjectParam) {
+      whereConditions.push(eq(note.subject, subjectParam));
+    }
+
     const noteData = await db.query.note.findMany({
-      where: eq(note.isPublished, true),
+      where: and(...whereConditions),
       columns: {
         id: true,
         title: true,

@@ -10,6 +10,8 @@ import { ArrowRight, BookOpen, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+export const revalidate = 60 * 60 * 24 * 30; // Revalidate every 1 month
+
 interface ClassPageProps {
   params: Promise<{ classSlug: string }>;
 }
@@ -45,37 +47,38 @@ const ClassPage = async ({ params }: ClassPageProps) => {
       {/* Subjects Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {classData.subjects.map((subject, index) => (
-          <Card
-            key={subject.slug}
-            className="group cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-2xl hover:-translate-y-2 border-2 hover:border-[#7A7FEE]/50 overflow-hidden relative backdrop-blur-sm"
-          >
-            {/* Gradient overlay on hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/5 transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
+          <Link href={`/class/${classSlug}/${subject.slug}`}>
+            <Card
+              key={subject.slug}
+              className="group cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-2xl hover:-translate-y-2 border-2 hover:border-[#7A7FEE]/50 overflow-hidden relative backdrop-blur-sm"
+            >
+              {/* Gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/5 transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
 
-            <CardHeader className="pb-6 relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-4 rounded-xl transition-all duration-500 bg-gradient-to-br from-primary/15 to-primary/15 group-hover:from-primary group-hover:to-primary group-hover:scale-105 group-hover:shadow-lg">
-                  <BookOpen className="w-7 h-7 transition-all duration-500 text-primary group-hover:text-white group-hover:scale-110" />
-                </div>
-                <div className="text-right">
-                  <div className="text-sm font-medium text-muted-foreground">
-                    {classData.resources.length} Resources
+              <CardHeader className="pb-6 relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="p-4 rounded-xl transition-all duration-500 bg-gradient-to-br from-primary/15 to-primary/15 group-hover:from-primary group-hover:to-primary group-hover:scale-105 group-hover:shadow-lg">
+                    <BookOpen className="w-7 h-7 transition-all duration-500 text-primary group-hover:text-white group-hover:scale-110" />
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm font-medium text-muted-foreground">
+                      {classData.resources.length} Resources
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <CardTitle className="text-2xl font-bold group-hover:text-primary transition-colors duration-500 mb-2">
-                {subject.name}
-              </CardTitle>
+                <CardTitle className="text-2xl font-bold group-hover:text-primary transition-colors duration-500 mb-2">
+                  {subject.name}
+                </CardTitle>
 
-              <CardDescription className="text-base leading-relaxed">
-                {subject.description}
-              </CardDescription>
-            </CardHeader>
+                <CardDescription className="text-base leading-relaxed">
+                  {subject.description}
+                </CardDescription>
+              </CardHeader>
 
-            <CardContent className="pt-0 relative z-10">
-              {/* Resources Preview */}
-              <div className="mb-6">
+              <CardContent className="pt-0 relative z-10">
+                {/* Resources Preview */}
+                {/* <div className="mb-6">
                 <div className="text-sm font-semibold text-muted-foreground mb-3">
                   Available Resources:
                 </div>
@@ -94,24 +97,22 @@ const ClassPage = async ({ params }: ClassPageProps) => {
                     </span>
                   )}
                 </div>
-              </div>
+              </div> */}
 
-              {/* Select Button */}
-              <Link
-                href={`/class/${classSlug}/${subject.slug}`}
-                className="w-full py-4 px-6 rounded-xl font-semibold text-base transition-all duration-500 ease-out flex items-center justify-center gap-3 bg-muted/60 hover:bg-muted text-foreground border-2 border-transparent hover:border-primary/20 group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-primary group-hover:text-white group-hover:shadow-xl group-hover:shadow-primary/30 group-hover:scale-105 group-hover:shadow-lg transform-gpu"
-              >
-                <span>Explore Subject</span>
-                <ArrowRight className="w-5 h-5 transition-all duration-500 group-hover:translate-x-2 group-hover:scale-110" />
-              </Link>
-            </CardContent>
-          </Card>
+                {/* Select Button */}
+                <button className="w-full py-4 px-6 rounded-xl font-semibold text-base transition-all duration-500 ease-out flex items-center justify-center gap-3 bg-muted/60 hover:bg-muted text-foreground border-2 border-transparent hover:border-primary/20 group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-primary group-hover:text-white group-hover:shadow-xl group-hover:shadow-primary/30 group-hover:scale-105 group-hover:shadow-lg transform-gpu">
+                  <span>Explore Subject</span>
+                  <ArrowRight className="w-5 h-5 transition-all duration-500 group-hover:translate-x-2 group-hover:scale-110" />
+                </button>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 
       {/* Additional Info */}
       <div className="mt-16 text-center">
-        <div className="max-w-4xl mx-auto p-8 rounded-2xl bg-gradient-to-r from-muted/30 to-muted/50 border border-border/50">
+        <div className="p-8 rounded-2xl bg-gradient-to-r from-muted/30 to-muted/50 border border-border/50">
           <p className="text-lg text-muted-foreground leading-relaxed">
             Each subject includes comprehensive notes, NCERT books, syllabus,
             and previous year question papers to help you excel in your{" "}

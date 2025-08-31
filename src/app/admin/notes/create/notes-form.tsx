@@ -33,6 +33,15 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { classEnum, subjectEnum } from "@/server/db/schema";
+
 const NotesForm = () => {
   const router = useRouter();
   const form = useForm<z.infer<typeof NoteCreationSchema>>({
@@ -229,6 +238,74 @@ const NotesForm = () => {
               </FormItem>
             )}
           />
+
+          <div className="flex items-center gap-4">
+            {/* Class Select */}
+            <FormField
+              control={form.control}
+              name="class"
+              render={({ field }) => (
+                <FormItem className="basis-1/2">
+                  <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                    <BookOpen className="w-4 h-4" />
+                    Select Class
+                  </FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Class" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {classEnum.enumValues.map((value) => (
+                          <SelectItem
+                            key={value}
+                            value={value}
+                            className="capitalize"
+                          >
+                            {value.replaceAll("_", " ")}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Subject Select */}
+            <FormField
+              control={form.control}
+              name="subject"
+              render={({ field }) => (
+                <FormItem className="basis-1/2">
+                  <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                    <BookOpen className="w-4 h-4" />
+                    Select Subject
+                  </FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Subject" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {subjectEnum.enumValues.map((value) => (
+                          <SelectItem
+                            key={value}
+                            value={value}
+                            className="capitalize"
+                          >
+                            {value.replaceAll("_", " ")}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           {/* Published Status */}
           <FormField

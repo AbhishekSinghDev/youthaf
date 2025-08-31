@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const SelectClassSection = () => {
   return (
-    <section id="start" className="py-10">
+    <section id="start" className="py-10 z-10">
       {/* Header Section */}
       <div className="text-center mb-16">
         <div className="flex items-center justify-center gap-3 mb-6">
@@ -25,38 +25,39 @@ const SelectClassSection = () => {
       {/* Classes Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         {Object.entries(classesData).map(([key, classInfo]) => (
-          <Card
-            key={key}
-            className="group cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-2xl hover:-translate-y-2 border-2 hover:border-[#7A7FEE]/50 overflow-hidden relative backdrop-blur-sm"
-          >
-            {/* Gradient overlay on hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/5 transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
+          <Link key={key} href={`/class/${classInfo.slug}`}>
+            <Card
+              key={key}
+              className="group cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-2xl hover:-translate-y-2 border-2 hover:border-[#7A7FEE]/50 overflow-hidden relative backdrop-blur-sm"
+            >
+              {/* Gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/5 transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
 
-            <CardHeader className="pb-6 relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                {/* <div className="p-4 rounded-xl transition-all duration-500 bg-gradient-to-br from-primary/15 to-primary/15 group-hover:from-primary group-hover:to-primary group-hover:scale-105 group-hover:shadow-lg">
+              <CardHeader className="pb-6 relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  {/* <div className="p-4 rounded-xl transition-all duration-500 bg-gradient-to-br from-primary/15 to-primary/15 group-hover:from-primary group-hover:to-primary group-hover:scale-105 group-hover:shadow-lg">
                   <BookOpen className="w-7 h-7 transition-all duration-500 text-primary group-hover:text-white group-hover:scale-110" />
                 </div> */}
-                {/* <div className="text-right">
+                  {/* <div className="text-right">
                   <div className="text-sm font-medium text-muted-foreground">
                     {classInfo.subjects.length} Subjects
                   </div>
                 </div> */}
-              </div>
+                </div>
 
-              <CardTitle className="text-2xl text-center font-bold group-hover:text-primary transition-colors duration-500">
-                {classInfo.title}
-              </CardTitle>
+                <CardTitle className="text-2xl text-center font-bold group-hover:text-primary transition-colors duration-500">
+                  {classInfo.title}
+                </CardTitle>
 
-              {/* <CardDescription className="text-base leading-relaxed">
+                {/* <CardDescription className="text-base leading-relaxed">
                 Comprehensive study materials for{" "}
                 {classInfo.title.toLowerCase()} students
               </CardDescription> */}
-            </CardHeader>
+              </CardHeader>
 
-            <CardContent className="pt-0 relative z-10">
-              {/* Subjects Preview */}
-              {/* <div className="mb-6">
+              <CardContent className="pt-0 relative z-10">
+                {/* Subjects Preview */}
+                {/* <div className="mb-6">
                 <div className="text-sm font-semibold text-muted-foreground mb-3">
                   Available Subjects:
                 </div>
@@ -77,16 +78,14 @@ const SelectClassSection = () => {
                 </div>
               </div> */}
 
-              {/* Select Button */}
-              <Link
-                href={`/class/${classInfo.slug}`}
-                className="w-full py-4 px-6 rounded-xl font-semibold text-base transition-all duration-500 ease-out flex items-center justify-center gap-3 bg-muted/60 hover:bg-muted text-foreground border-2 border-transparent hover:border-primary/20 group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-primary group-hover:text-white group-hover:shadow-xl group-hover:shadow-primary/30 group-hover:scale-105 group-hover:shadow-lg transform-gpu"
-              >
-                <span>Select Class</span>
-                <ArrowRight className="w-5 h-5 transition-all duration-500 group-hover:translate-x-2 group-hover:scale-110" />
-              </Link>
-            </CardContent>
-          </Card>
+                {/* Select Button */}
+                <button className="w-full py-4 px-6 rounded-xl font-semibold text-base transition-all duration-500 ease-out flex items-center justify-center gap-3 bg-muted/60 hover:bg-muted text-foreground border-2 border-transparent hover:border-primary/20 group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-primary group-hover:text-white group-hover:shadow-xl group-hover:shadow-primary/30 group-hover:scale-105 group-hover:shadow-lg transform-gpu">
+                  <span>Select Class</span>
+                  <ArrowRight className="w-5 h-5 transition-all duration-500 group-hover:translate-x-2 group-hover:scale-110" />
+                </button>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 

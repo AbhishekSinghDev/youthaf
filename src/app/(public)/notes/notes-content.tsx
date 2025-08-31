@@ -4,15 +4,28 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ListNote } from "@/lib/type";
+import { Class, ListNote, Subject } from "@/lib/type";
 import { constructFileUrl } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { FileText, RefreshCw } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
-const fetchAllNotes = async (): Promise<{ notes: ListNote[] }> => {
-  const response = await fetch(`/api/note/all`);
+const fetchAllNotes = async (
+  classParam?: string,
+  subjectParam?: string
+): Promise<{ notes: ListNote[] }> => {
+  let url = "/api/note/all";
+
+  if (classParam || subjectParam) {
+    const queryParams = new URLSearchParams();
+    if (classParam) queryParams.append("class", classParam);
+    if (subjectParam) queryParams.append("subject", subjectParam);
+    url += `?${queryParams.toString()}`;
+  }
+
+  const response = await fetch(url);
   if (!response.ok) {
     if (response.status === 404) {
       throw new Error(
@@ -77,9 +90,13 @@ const ErrorState = ({
 );
 
 const NotesContent = () => {
+  const searchParams = useSearchParams();
+  const classParam = searchParams.get("class") as Class | undefined;
+  const subjectParam = searchParams.get("subject") as Subject | undefined;
+
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["all-notes"],
-    queryFn: fetchAllNotes,
+    queryFn: () => fetchAllNotes(classParam, subjectParam),
   });
 
   const publishedNotes = data?.notes.filter((note) => note.isPublished) || [];

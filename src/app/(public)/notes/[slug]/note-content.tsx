@@ -3,7 +3,7 @@
 import RichTextRenderer from "@/components/rich-text-editor/renderer";
 import PDFViewer from "@/components/shared/pdf-viewer";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ListNote } from "@/lib/type";
+import { fetchNoteContent } from "@/lib/functions";
 import { constructFileUrl } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { formatDate } from "date-fns";
@@ -11,25 +11,6 @@ import { Calendar, FileText } from "lucide-react";
 import Image from "next/image";
 import ErrorState from "./error-state";
 import NoteContentSkeleton from "./note-content-skeleton";
-
-const fetchNoteContent = async (slug: string): Promise<{ note: ListNote }> => {
-  const response = await fetch(`/api/note?slug=${slug}`);
-  if (!response.ok) {
-    if (response.status === 404) {
-      throw new Error(
-        "Note not found. The requested note may have been deleted or moved."
-      );
-    }
-    if (response.status === 403) {
-      throw new Error(
-        "Access denied. You don't have permission to view this note."
-      );
-    }
-    throw new Error("Failed to load note content. Please try again later.");
-  }
-  const data = await response.json();
-  return data;
-};
 
 const NoteContent = ({ slug }: { slug: string }) => {
   const { data, error, isLoading } = useQuery({

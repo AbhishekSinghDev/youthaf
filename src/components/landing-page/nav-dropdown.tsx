@@ -49,13 +49,7 @@ export default function NavDropdown({ trigger }: NavDropdownProps) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
 
-        <DropdownMenuContent
-          align="end"
-          className={`p-0 w-96 rounded-xl shadow-lg border-0 ${
-            isDarkMode ? "bg-[#272829]" : "bg-white"
-          }`}
-          sideOffset={8}
-        >
+        <DropdownMenuContent align="end">
           <div className="p-6 space-y-6">
             {/* Classes Accordion */}
             <div>

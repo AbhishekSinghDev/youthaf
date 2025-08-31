@@ -1,7 +1,9 @@
 import {
+  classEnum,
   courseCategoryEnum,
   courseLevelEnum,
   statusEnum,
+  subjectEnum,
 } from "@/server/db/schema";
 import z4 from "zod/v4";
 
@@ -74,6 +76,8 @@ export const NoteCreationSchema = z4.object({
       "Slug must be lowercase letters, numbers, and hyphens only"
     ),
   thumbnailKey: z4.string().min(1, "Thumbnail key is required"),
+  class: z4.enum(classEnum.enumValues, "Invalid class"),
+  subject: z4.enum(subjectEnum.enumValues, "Invalid subject"),
   isPublished: z4.boolean().default(false),
   attachments: z4
     .array(

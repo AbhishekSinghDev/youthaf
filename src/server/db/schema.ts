@@ -113,6 +113,21 @@ export const courseCategoryEnum = pgEnum("course_category_enum", [
   "others",
 ]);
 
+export const classEnum = pgEnum("class_enum", [
+  "class_9",
+  "class_10",
+  "class_11",
+  "class_12",
+]);
+
+export const subjectEnum = pgEnum("subject_enum", [
+  "computer_science",
+  "information_practices",
+  "information_technology",
+  "artificial_intelligence",
+  "computer_applications",
+]);
+
 export const course = pgTable("course", {
   id: uuid("id")
     .primaryKey()
@@ -154,6 +169,8 @@ export const note = pgTable("note", {
   slug: text("slug").notNull().unique(),
   thumbnailKey: text("thumbnail_key").notNull(),
   views: numeric("views").notNull().default("0"),
+  class: classEnum("class").notNull(),
+  subject: subjectEnum("subject").notNull(),
   isPublished: boolean("is_published").default(false).notNull(),
   createdBy: uuid("created_by")
     .notNull()

@@ -27,9 +27,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ListNote } from "@/lib/type";
 import { constructFileUrl, generateSlug } from "@/lib/utils";
 import { NoteCreationSchema } from "@/lib/zod-schema";
+import { classEnum, subjectEnum } from "@/server/db/schema";
 import { IconImageInPicture, IconSparkles } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
@@ -60,6 +68,7 @@ const fetchNoteContent = async (slug: string): Promise<{ note: ListNote }> => {
 };
 
 const NotesForm = ({ slug }: NotesFormProps) => {
+  const [isSettingValues, setIsSettingValues] = useState(true);
   const [noteId, setNoteId] = useState<string | null>(null);
   const editorRef = useRef<any>(null);
   const queryClient = useQueryClient();
@@ -218,8 +227,6 @@ const NotesForm = ({ slug }: NotesFormProps) => {
   };
 
   useEffect(() => {
-    console.log(data?.note);
-
     if (data?.note) {
       setNoteId(data.note.id);
 
@@ -233,6 +240,8 @@ const NotesForm = ({ slug }: NotesFormProps) => {
         content: JSON.stringify(noteContent),
         slug: data.note.slug,
         thumbnailKey: data.note?.thumbnailKey ?? "",
+        class: data.note.class || undefined,
+        subject: data.note.subject || undefined,
         isPublished: data.note.isPublished,
         attachments:
           data.note.attachments?.map((att) => ({
@@ -242,6 +251,8 @@ const NotesForm = ({ slug }: NotesFormProps) => {
           })) || [],
       });
 
+      setIsSettingValues(false);
+
       // Manually set editor content
       if (editorRef.current) {
         editorRef.current.commands.setContent(noteContent);
@@ -249,7 +260,7 @@ const NotesForm = ({ slug }: NotesFormProps) => {
     }
   }, [data, form]);
 
-  if (isLoading) return <div>Loading note data...</div>;
+  if (isLoading || isSettingValues) return <div>Loading note data...</div>;
   if (isError) return <div>Error loading note data</div>;
 
   return (
@@ -472,6 +483,74 @@ const NotesForm = ({ slug }: NotesFormProps) => {
               ))}
             </div>
           )}
+
+          <div className="flex items-center gap-4">
+            {/* Class Select */}
+            <FormField
+              control={form.control}
+              name="class"
+              render={({ field }) => (
+                <FormItem className="basis-1/2">
+                  <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                    <BookOpen className="w-4 h-4" />
+                    Select Class
+                  </FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Class" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {classEnum.enumValues.map((value) => (
+                          <SelectItem
+                            key={value}
+                            value={value}
+                            className="capitalize"
+                          >
+                            {value.replaceAll("_", " ")}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Subject Select */}
+            <FormField
+              control={form.control}
+              name="subject"
+              render={({ field }) => (
+                <FormItem className="basis-1/2">
+                  <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                    <BookOpen className="w-4 h-4" />
+                    Select Subject
+                  </FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Subject" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {subjectEnum.enumValues.map((value) => (
+                          <SelectItem
+                            key={value}
+                            value={value}
+                            className="capitalize"
+                          >
+                            {value.replaceAll("_", " ")}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           {/* Published Status */}
           <FormField

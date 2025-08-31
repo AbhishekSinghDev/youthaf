@@ -4,7 +4,7 @@ import Logo from "../shared/logo";
 
 const TelegramChannelCTA = () => {
   return (
-    <div className="bg-gradient-to-r from-primary via-[#7A7FEE] to-primary p-4 md:p-8 rounded-2xl shadow-xl my-8 dark:from-primary dark:via-[#7A7FEE] dark:to-primary">
+    <div className="bg-gradient-to-r z-10 from-primary via-[#7A7FEE] to-primary p-4 md:p-8 rounded-2xl shadow-xl my-8 dark:from-primary dark:via-[#7A7FEE] dark:to-primary">
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8">
         {/* Left Content */}
         <div className="flex-1 text-primary-foreground text-center md:text-left">

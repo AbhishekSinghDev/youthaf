@@ -42,6 +42,8 @@ export async function PUT(req: Request) {
         title: data.title,
         content: data.content,
         slug: data.slug,
+        class: data.class,
+        subject: data.subject,
         isPublished: data.isPublished,
         updatedAt: new Date(),
       })

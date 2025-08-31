@@ -19,8 +19,8 @@ export default function Hero() {
 
   return (
     <>
-      <section className="relative overflow-hidden min-h-[50vh] flex flex-col">
-        <div className="container mx-auto px-4 py-12 relative z-10 flex-1 flex flex-col">
+      <section className="relative overflow-hidden min-h-[50vh] flex flex-col z-10">
+        <div className="container mx-auto px-4 pt-12 pb-8 relative z-10 flex-1 flex flex-col">
           <div className="text-center flex-1 flex flex-col items-center justify-center">
             {/* Main Heading */}
             <motion.div

@@ -1,4 +1,4 @@
-import { course } from "@/server/db/schema";
+import { classEnum, course, subjectEnum } from "@/server/db/schema";
 import type React from "react";
 
 // Update the ProjectType interface to match our new data structure
@@ -54,6 +54,8 @@ export interface ListNote {
   content: string;
   slug: string;
   thumbnailKey: string;
+  class: (typeof classEnum.enumValues)[number];
+  subject: (typeof subjectEnum.enumValues)[number];
   isPublished: boolean;
   attachments?: {
     id: string;
@@ -85,3 +87,6 @@ export interface ClassType {
   subjects: readonly SubjectType[];
   resources: readonly ResourceType[];
 }
+
+export type Class = (typeof classEnum.enumValues)[number];
+export type Subject = (typeof subjectEnum.enumValues)[number];

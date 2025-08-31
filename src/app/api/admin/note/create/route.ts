@@ -28,6 +28,8 @@ export async function POST(req: Request) {
         content: data.content,
         slug: data.slug,
         thumbnailKey: data.thumbnailKey,
+        class: data.class,
+        subject: data.subject,
         isPublished: data.isPublished,
         createdBy: session.user.id,
       })

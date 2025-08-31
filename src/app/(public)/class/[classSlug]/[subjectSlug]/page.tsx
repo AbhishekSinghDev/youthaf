@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+export const revalidate = 60 * 60 * 24 * 30; // Revalidate every 1 month
 
 interface SubjectPageProps {
   params: Promise<{ classSlug: string; subjectSlug: string }>;
@@ -80,6 +82,8 @@ const SubjectPage = async ({ params }: SubjectPageProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
         {classData.resources.map((resource) => {
           const IconComponent = iconMap[resource.icon as keyof typeof iconMap];
+          const subjectResourceLink =
+            classData.subjectResourceLinks[subjectSlug][resource.slug];
 
           return (
             <Card
@@ -109,13 +113,16 @@ const SubjectPage = async ({ params }: SubjectPageProps) => {
 
               <CardContent className="pt-0 relative z-10">
                 {/* Access Button */}
-                <Button
-                  className="w-full rounded-xl font-semibold text-base transition-all duration-500 ease-out flex items-center justify-center gap-3 bg-muted/60 hover:bg-muted text-foreground border-2 border-transparent hover:border-primary/20 group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-primary group-hover:text-white group-hover:shadow-xl group-hover:shadow-primary/30 group-hover:scale-105 group-hover:shadow-lg transform-gpu"
-                  variant="outline"
+                <Link
+                  href={subjectResourceLink}
+                  className={buttonVariants({
+                    variant: "default",
+                    className: "flex items-center gap-2 w-full",
+                  })}
                 >
                   <span>Click Here</span>
                   <ArrowRight className="w-5 h-5 transition-all duration-500 group-hover:translate-x-2 group-hover:scale-110" />
-                </Button>
+                </Link>
               </CardContent>
             </Card>
           );
