@@ -11,6 +11,7 @@ import { FileText, RefreshCw } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 const fetchAllNotes = async (
   classParam?: string,
@@ -161,4 +162,12 @@ const NotesContent = () => {
   );
 };
 
-export default NotesContent;
+const NotesContentSuspense = () => {
+  return (
+    <Suspense fallback={null}>
+      <NotesContent />
+    </Suspense>
+  );
+};
+
+export default NotesContentSuspense;

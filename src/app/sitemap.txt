@@ -4,16 +4,23 @@ import { ListNote } from "@/lib/type";
 import { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const notes = (await fetch(
-    `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/note/all`
-  ).then((res) => res.json())) as { notes: ListNote[] };
+  let noteEntries: MetadataRoute.Sitemap = [];
 
-  const noteEntries = notes.notes.map((note) => ({
-    url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/notes/${note.slug}`,
-    lastModified: note.updatedAt || note.createdAt,
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
+  try {
+    const notes = (await fetch(
+      `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/api/note/all`
+    ).then((res) => res.json())) as { notes: ListNote[] };
+
+    noteEntries = notes.notes.map((note) => ({
+      url: `${env.NEXT_PUBLIC_BETTER_AUTH_URL}/notes/${note.slug}`,
+      lastModified: note.updatedAt || note.createdAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
+  } catch (error) {
+    console.warn("Failed to fetch notes for sitemap during build:", error);
+    // noteEntries remains empty array if fetch fails
+  }
 
   const classEntries: MetadataRoute.Sitemap = [];
 
