@@ -9,8 +9,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ChevronLeft, ChevronRight, Download } from "lucide-react";
+import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
+import Logo from "./logo";
 
 interface PDFViewerProps {
   pdfUrl: string;
@@ -25,14 +26,13 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
   height = 600,
   fileName = "document.pdf",
 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
   const [showAdDialog, setShowAdDialog] = useState(false);
   const [adTimer, setAdTimer] = useState(10);
   const [canDownload, setCanDownload] = useState(false);
   const isMobile = useIsMobile();
 
   // Enhanced PDF URL with page navigation
-  const pdfViewerUrl = `${pdfUrl}#page=${currentPage}&toolbar=0&navpanes=0&scrollbar=0`;
+  const pdfViewerUrl = `${pdfUrl}#toolbar=0&navpanes=0&scrollbar=0`;
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -72,46 +72,16 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
     setCanDownload(false);
   };
 
-  const goToPage = (pageNum: number) => {
-    if (pageNum >= 1) {
-      setCurrentPage(pageNum);
-    }
-  };
-
   return (
     <div className="w-full bg-background" style={{ width, height }}>
       {/* Minimal Toolbar */}
       <div className="flex justify-between items-center p-2 bg-muted/30 border-b">
-        <div className="flex items-center space-x-2">
-          <Button
-            onClick={() => goToPage(currentPage - 1)}
-            disabled={currentPage <= 1}
-            size="sm"
-            variant="outline"
-          >
-            <ChevronLeft size={16} />
-            {!isMobile && "Previous"}
-          </Button>
-
-          <div className="px-2 py-1 bg-background rounded border text-sm">
-            <span>Page {currentPage}</span>
-          </div>
-
-          <Button
-            onClick={() => goToPage(currentPage + 1)}
-            size="sm"
-            variant="outline"
-          >
-            <ChevronRight size={16} />
-            {!isMobile && "Next"}
-          </Button>
-        </div>
-
+        <Logo showBrandName />
         <Button
           onClick={handleDownloadClick}
           size="sm"
           variant="default"
-          className="flex items-center space-x-1"
+          className="flex items-center space-x-1 "
         >
           <Download size={16} />
           {!isMobile && <span>Download</span>}
@@ -125,6 +95,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
           height:
             typeof height === "number" ? height - 60 : `calc(${height} - 60px)`,
         }}
+        onContextMenu={(e) => e.preventDefault()}
       >
         <iframe
           src={pdfViewerUrl}
@@ -132,6 +103,8 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
           height="100%"
           style={{ border: "none" }}
           title="PDF Viewer"
+          onClick={(e) => e.stopPropagation()}
+          onContextMenu={(e) => e.preventDefault()}
         />
       </div>
 

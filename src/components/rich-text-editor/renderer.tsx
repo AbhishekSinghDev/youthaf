@@ -22,7 +22,7 @@ const RichTextRenderer = ({ content, className }: RichTextRendererProps) => {
     editorProps: {
       attributes: {
         class: cn(
-          "prose prose-sm sm:prose lg:prose-lg xl:prose-xl dark:prose-invert !w-full !max-w-none",
+          "prose prose-sm xl:prose-base dark:prose-invert !w-full !max-w-none",
           "focus:outline-none",
           className
         ),
