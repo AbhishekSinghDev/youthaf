@@ -2,263 +2,195 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Menu,
-  RotateCw,
-  ZoomIn,
-  ZoomOut,
-} from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Download } from "lucide-react";
+import { useEffect, useState } from "react";
 
-interface PDFJSViewerProps {
+interface PDFViewerProps {
   pdfUrl: string;
   width?: string | number;
   height?: string | number;
+  fileName?: string;
 }
 
-const PDFViewer: React.FC<PDFJSViewerProps> = ({
+const PDFViewer: React.FC<PDFViewerProps> = ({
   pdfUrl,
   width = "100%",
   height = 600,
+  fileName = "document.pdf",
 }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-  const [pdfDoc, setPdfDoc] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [scale, setScale] = useState(1);
-  const [rotation, setRotation] = useState(0);
+  const [showAdDialog, setShowAdDialog] = useState(false);
+  const [adTimer, setAdTimer] = useState(10);
+  const [canDownload, setCanDownload] = useState(false);
   const isMobile = useIsMobile();
 
+  // Enhanced PDF URL with page navigation
+  const pdfViewerUrl = `${pdfUrl}#page=${currentPage}&toolbar=0&navpanes=0&scrollbar=0`;
+
   useEffect(() => {
-    // Load PDF.js from CDN
-    const script = document.createElement("script");
-    script.src =
-      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
-    script.onload = () => {
-      loadPDF();
-    };
-    document.head.appendChild(script);
+    let interval: NodeJS.Timeout;
+    if (showAdDialog && adTimer > 0) {
+      interval = setInterval(() => {
+        setAdTimer((prev) => prev - 1);
+      }, 1000);
+    } else if (adTimer === 0) {
+      setCanDownload(true);
+    }
 
     return () => {
-      document.head.removeChild(script);
+      if (interval) clearInterval(interval);
     };
-  }, [pdfUrl]);
+  }, [showAdDialog, adTimer]);
 
-  const loadPDF = async () => {
-    try {
-      // @ts-ignore
-      const pdfjsLib = window.pdfjsLib;
-      pdfjsLib.GlobalWorkerOptions.workerSrc =
-        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-
-      const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
-      setPdfDoc(pdf);
-      setTotalPages(pdf.numPages);
-      setLoading(false);
-      renderPage(1, pdf);
-    } catch (error) {
-      console.error("Error loading PDF:", error);
-      setLoading(false);
-    }
+  const handleDownloadClick = () => {
+    setShowAdDialog(true);
+    setAdTimer(10);
+    setCanDownload(false);
   };
 
-  const renderPage = async (pageNum: number, pdf = pdfDoc) => {
-    if (!pdf || !canvasRef.current) return;
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = pdfUrl;
+    link.download = fileName;
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setShowAdDialog(false);
+  };
 
-    const page = await pdf.getPage(pageNum);
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-
-    const viewport = page.getViewport({ scale, rotation });
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-
-    await page.render({
-      canvasContext: context,
-      viewport: viewport,
-    }).promise;
+  const handleCloseDialog = () => {
+    setShowAdDialog(false);
+    setAdTimer(10);
+    setCanDownload(false);
   };
 
   const goToPage = (pageNum: number) => {
-    if (pageNum >= 1 && pageNum <= totalPages) {
+    if (pageNum >= 1) {
       setCurrentPage(pageNum);
-      renderPage(pageNum);
     }
   };
 
-  const handleZoomIn = () => {
-    const newScale = Math.min(scale + 0.2, 3);
-    setScale(newScale);
-    renderPage(currentPage);
-  };
-
-  const handleZoomOut = () => {
-    const newScale = Math.max(scale - 0.2, 0.5);
-    setScale(newScale);
-    renderPage(currentPage);
-  };
-
-  const handleRotate = () => {
-    const newRotation = (rotation + 90) % 360;
-    setRotation(newRotation);
-    renderPage(currentPage);
-  };
-
-  const handleFitToWidth = () => {
-    setScale(1.0);
-    renderPage(currentPage);
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-muted-foreground">Loading PDF...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="w-full bg-background" style={{ width, height }}>
-      {/* Toolbar */}
-      <div className="flex justify-between items-center p-4 bg-muted/30 sticky top-0 z-10">
-        {isMobile ? (
-          // Mobile Layout - Dropdown Menu
-          <>
-            <div className="flex items-center space-x-2">
-              <Button
-                onClick={() => goToPage(currentPage - 1)}
-                disabled={currentPage <= 1}
-                size="icon"
-                variant="default"
-              >
-                <ChevronLeft />
-              </Button>
+      {/* Minimal Toolbar */}
+      <div className="flex justify-between items-center p-2 bg-muted/30 border-b">
+        <div className="flex items-center space-x-2">
+          <Button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage <= 1}
+            size="sm"
+            variant="outline"
+          >
+            <ChevronLeft size={16} />
+            {!isMobile && "Previous"}
+          </Button>
 
-              <div className="px-2 py-1 bg-background rounded-lg border border-border text-xs">
-                <span className="text-foreground font-medium">
-                  {currentPage}/{totalPages}
-                </span>
-              </div>
+          <div className="px-2 py-1 bg-background rounded border text-sm">
+            <span>Page {currentPage}</span>
+          </div>
 
-              <Button
-                onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage >= totalPages}
-                size="icon"
-                variant="default"
-              >
-                <ChevronRight />
-              </Button>
-            </div>
+          <Button
+            onClick={() => goToPage(currentPage + 1)}
+            size="sm"
+            variant="outline"
+          >
+            <ChevronRight size={16} />
+            {!isMobile && "Next"}
+          </Button>
+        </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="icon" variant="secondary">
-                  <Menu size={16} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={handleZoomOut}>
-                  <ZoomOut size={16} />
-                  Zoom Out
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleZoomIn}>
-                  <ZoomIn size={16} />
-                  Zoom In
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleRotate}>
-                  <RotateCw size={16} />
-                  Rotate
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem disabled>
-                  Zoom: {Math.round(scale * 100)}%
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </>
-        ) : (
-          // Desktop Layout - Original
-          <>
-            {/* Navigation Controls */}
-            <div className="flex items-center space-x-2">
-              <Button
-                onClick={() => goToPage(currentPage - 1)}
-                disabled={currentPage <= 1}
-                size="icon"
-                variant="default"
-              >
-                <ChevronLeft />
-              </Button>
-
-              <div className="px-3 py-2 bg-background rounded-lg border border-border text-sm">
-                <span className="text-foreground font-medium">
-                  {currentPage} / {totalPages}
-                </span>
-              </div>
-
-              <Button
-                onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage >= totalPages}
-                size="icon"
-                variant="default"
-              >
-                <ChevronRight />
-              </Button>
-            </div>
-
-            {/* Zoom and Action Controls */}
-            <div className="flex items-center space-x-2">
-              <Button onClick={handleZoomOut} size="icon" variant="secondary">
-                <ZoomOut size={16} />
-              </Button>
-
-              <div className="px-3 py-2 bg-background rounded-lg border border-border text-sm min-w-[60px] text-center">
-                <span className="text-foreground font-medium">
-                  {Math.round(scale * 100)}%
-                </span>
-              </div>
-
-              <Button onClick={handleZoomIn} size="icon" variant="secondary">
-                <ZoomIn size={16} />
-              </Button>
-
-              <Button
-                onClick={handleRotate}
-                size="icon"
-                variant="secondary"
-                title="Rotate"
-              >
-                <RotateCw size={16} />
-              </Button>
-            </div>
-          </>
-        )}
+        <Button
+          onClick={handleDownloadClick}
+          size="sm"
+          variant="default"
+          className="flex items-center space-x-1"
+        >
+          <Download size={16} />
+          {!isMobile && <span>Download</span>}
+        </Button>
       </div>
 
-      {/* PDF Canvas */}
+      {/* PDF Viewer */}
       <div
-        className="overflow-auto flex justify-center bg-background p-4"
+        className="w-full"
         style={{
           height:
-            typeof height === "number" ? height - 72 : `calc(${height} - 72px)`,
+            typeof height === "number" ? height - 60 : `calc(${height} - 60px)`,
         }}
       >
-        <canvas ref={canvasRef} className="max-w-full h-fit shadow-sm" />
+        <iframe
+          src={pdfViewerUrl}
+          width="100%"
+          height="100%"
+          style={{ border: "none" }}
+          title="PDF Viewer"
+        />
       </div>
+
+      {/* Advertisement Dialog */}
+      <Dialog open={showAdDialog} onOpenChange={handleCloseDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Download Starting Soon...</DialogTitle>
+            <DialogDescription>
+              Please wait while we prepare your download.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col items-center space-y-4 py-4">
+            {/* Advertisement Space */}
+            <div className="w-full h-32 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white">
+              <div className="text-center">
+                <h3 className="font-bold text-lg">Your Ad Here</h3>
+                <p className="text-sm opacity-90">Premium content awaits!</p>
+              </div>
+            </div>
+
+            {/* Timer */}
+            <div className="text-center">
+              {adTimer > 0 ? (
+                <>
+                  <div className="text-2xl font-bold text-primary mb-2">
+                    {adTimer}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Download will start automatically...
+                  </p>
+                </>
+              ) : (
+                <p className="text-sm text-green-600 font-medium">
+                  Ready to download!
+                </p>
+              )}
+            </div>
+
+            {/* Download Button */}
+            <Button
+              onClick={handleDownload}
+              disabled={!canDownload}
+              className="w-full"
+              size="lg"
+            >
+              {canDownload ? (
+                <>
+                  <Download size={16} className="mr-2" />
+                  Download Now
+                </>
+              ) : (
+                `Please wait ${adTimer}s...`
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
