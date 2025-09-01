@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         port: "",
         protocol: "https",
       },
+      {
+        hostname: "youthaf.t3.storage.dev",
+        port: "",
+        protocol: "https",
+      },
     ],
   },
   typescript: {
