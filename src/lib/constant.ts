@@ -259,66 +259,65 @@ export const classesData = {
     resources: resourceTypes,
     subjectResourceLinks: {
       "computer-science": {
-        notes: "/class/class-11/computer-science/notes",
-        "ncert-books": "/class/class-11/computer-science/ncert-books",
-        syllabus: "/class/class-11/computer-science/syllabus",
-        "previous-year-papers":
-          "/class/class-11/computer-science/previous-year-papers",
-        "recommended-books":
-          "/class/class-11/computer-science/recommended-books",
+        notes: "/notes?class=class_11&subject=computer_science",
+        "ncert-books": "https://ncert.nic.in/textbook.php?lecs1=0-13",
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/CurriculumMain26/SrSec/Computer_Science_SrSec_2025-26.pdf",
+        "previous-year-papers": "https://t.me/YouthAf",
+        "recommended-books": "https://t.me/YouthAf",
       },
       "information-practices": {
-        notes: "/class/class-11/information-practices/notes",
-        "ncert-books": "/class/class-11/information-practices/ncert-books",
-        syllabus: "/class/class-11/information-practices/syllabus",
-        "previous-year-papers":
-          "/class/class-11/information-practices/previous-year-papers",
-        "recommended-books":
-          "/class/class-11/information-practices/recommended-books",
+        notes: "/notes?class=class_11&subject=information_practices",
+        "ncert-books": "https://ncert.nic.in/textbook.php?keip1=0-8",
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/CurriculumMain26/SrSec/Informatics_Practices_SrSec_2025-26.pdf",
+        "previous-year-papers": "https://t.me/YouthAf",
+        "recommended-books": "https://t.me/YouthAf",
       },
       "artificial-intelligence": {
-        notes: "/class/class-11/artificial-intelligence/notes",
-        "ncert-books": "/class/class-11/artificial-intelligence/ncert-books",
-        syllabus: "/class/class-11/artificial-intelligence/syllabus",
-        "previous-year-papers":
-          "/class/class-11/artificial-intelligence/previous-year-papers",
-        "recommended-books":
-          "/class/class-11/artificial-intelligence/recommended-books",
+        notes: "/notes?class=class_11&subject=artificial_intelligence",
+        "ncert-books":
+          "https://cbseacademic.nic.in/web_material/Curriculum25/publication/srsec/843_AI_Student_HandbookXI.pdf",
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/Curriculum26/SrSec/843-AI-XI.pdf",
+        "previous-year-papers": "https://t.me/YouthAf",
+        "recommended-books": "https://t.me/YouthAf",
       },
       "information-technology": {
-        notes: "/class/class-11/information-technology/notes",
-        "ncert-books": "/class/class-11/information-technology/ncert-books",
-        syllabus: "/class/class-11/information-technology/syllabus",
-        "previous-year-papers":
-          "/class/class-11/information-technology/previous-year-papers",
-        "recommended-books":
-          "/class/class-11/information-technology/recommended-books",
+        notes: "/notes?class=class_11&subject=information_technology",
+        "ncert-books":
+          "https://cbseacademic.nic.in/web_material/Curriculum26/publication/srsec/802-IT-Class-XI.pdf",
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/Curriculum26/SrSec/802-IT.pdf",
+        "previous-year-papers": "https://t.me/YouthAf",
+        "recommended-books": "https://t.me/YouthAf",
       },
       "computer-applications": {
-        notes: "/class/class-11/computer-applications/notes",
-        "ncert-books": "/class/class-11/computer-applications/ncert-books",
-        syllabus: "/class/class-11/computer-applications/syllabus",
-        "previous-year-papers":
-          "/class/class-11/computer-applications/previous-year-papers",
-        "recommended-books":
-          "/class/class-11/computer-applications/recommended-books",
+        notes: "/notes?class=class_11&subject=computer_applications",
+        "ncert-books":
+          "https://cbseacademic.nic.in/web_material/Curriculum21/publication/srsec/817_Typo_&_Com_Appl_XI.pdf",
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/Curriculum26/SrSec/817-TYPOGRAPHY-COMPUTER-APPLICATIONS_XI.pdf",
+        "previous-year-papers": "https://t.me/YouthAf",
+        "recommended-books": "https://t.me/YouthAf",
       },
       "web-applications": {
-        notes: "/class/class-11/web-applications/notes",
-        "ncert-books": "/class/class-11/web-applications/ncert-books",
-        syllabus: "/class/class-11/web-applications/syllabus",
-        "previous-year-papers":
-          "/class/class-11/web-applications/previous-year-papers",
-        "recommended-books":
-          "/class/class-11/web-applications/recommended-books",
+        notes: "/notes?class=class_11&subject=web_applications",
+        "ncert-books":
+          "https://cbseacademic.nic.in/web_material/Curriculum26/publication/srsec/803-WebApplication-XI.pdf",
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/Curriculum26/SrSec/803-WebApplication_XI.pdf",
+        "previous-year-papers": "https://t.me/YouthAf",
+        "recommended-books": "https://t.me/YouthAf",
       },
       "data-science": {
-        notes: "/class/class-11/data-science/notes",
-        "ncert-books": "/class/class-11/data-science/ncert-books",
-        syllabus: "/class/class-11/data-science/syllabus",
-        "previous-year-papers":
-          "/class/class-11/data-science/previous-year-papers",
-        "recommended-books": "/class/class-11/data-science/recommended-books",
+        notes: "/notes?class=class_11&subject=data_science",
+        "ncert-books":
+          "https://cbseacademic.nic.in/web_material/codeingDS/classXI_DS_Student_Handbook.pdf",
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/Curriculum25/SrSec/844-DATASCIENCE.pdf",
+        "previous-year-papers": "https://t.me/YouthAf",
+        "recommended-books": "https://t.me/YouthAf",
       },
     },
   },
@@ -329,66 +328,68 @@ export const classesData = {
     resources: resourceTypes,
     subjectResourceLinks: {
       "computer-science": {
-        notes: "/class/class-12/computer-science/notes",
-        "ncert-books": "/class/class-12/computer-science/ncert-books",
-        syllabus: "/class/class-12/computer-science/syllabus",
-        "previous-year-papers":
-          "/class/class-12/computer-science/previous-year-papers",
+        notes: "/notes?class=class_12&subject=computer_science",
+        "ncert-books": "https://ncert.nic.in/textbook.php?lecs1=0-13",
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/CurriculumMain26/SrSec/Computer_Science_SrSec_2025-26.pdf",
+        "previous-year-papers": "https://t.me/YouthAf",
         "recommended-books":
-          "/class/class-12/computer-science/recommended-books",
+          "https://www.amazon.in/hz/wishlist/ls/1E2EJ7FM3EMNS?ref_=wl_share",
       },
       "information-practices": {
-        notes: "/class/class-12/information-practices/notes",
-        "ncert-books": "/class/class-12/information-practices/ncert-books",
-        syllabus: "/class/class-12/information-practices/syllabus",
-        "previous-year-papers":
-          "/class/class-12/information-practices/previous-year-papers",
+        notes: "/notes?class=class_12&subject=information_practices",
+        "ncert-books":
+          "https://cbseacademic.nic.in/web_material/Curriculum26/publication/srsec/803-WebApplication-XI.pdf",
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/CurriculumMain26/SrSec/Informatics_Practices_SrSec_2025-26.pdf",
+        "previous-year-papers": "https://t.me/YouthAf",
         "recommended-books":
-          "/class/class-12/information-practices/recommended-books",
+          "https://www.amazon.in/hz/wishlist/ls/2V7X9WORA3AC6?ref_=wl_share",
       },
       "artificial-intelligence": {
-        notes: "/class/class-12/artificial-intelligence/notes",
-        "ncert-books": "/class/class-12/artificial-intelligence/ncert-books",
-        syllabus: "/class/class-12/artificial-intelligence/syllabus",
-        "previous-year-papers":
-          "/class/class-12/artificial-intelligence/previous-year-papers",
-        "recommended-books":
-          "/class/class-12/artificial-intelligence/recommended-books",
+        notes: "/notes?class=class_12&subject=artificial_intelligence",
+        "ncert-books":
+          "https://cbseacademic.nic.in/web_material/Curriculum26/publication/srsec/AI_Student_HandbookXII.pdf",
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/Curriculum26/SrSec/843-AI-XII.pdf",
+        "previous-year-papers": "https://t.me/YouthAf",
+        "recommended-books": "https://t.me/YouthAf",
       },
       "information-technology": {
-        notes: "/class/class-12/information-technology/notes",
-        "ncert-books": "/class/class-12/information-technology/ncert-books",
-        syllabus: "/class/class-12/information-technology/syllabus",
-        "previous-year-papers":
-          "/class/class-12/information-technology/previous-year-papers",
-        "recommended-books":
-          "/class/class-12/information-technology/recommended-books",
+        notes: "/notes?class=class_12&subject=information_technology",
+        "ncert-books":
+          "https://cbseacademic.nic.in/web_material/Curriculum21/publication/srsec/802-Information Technology Class- XII.pdf",
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/Curriculum26/SrSec/802-IT.pdf",
+        "previous-year-papers": "https://t.me/YouthAf",
+        "recommended-books": "https://t.me/YouthAf",
       },
       "computer-applications": {
-        notes: "/class/class-12/computer-applications/notes",
-        "ncert-books": "/class/class-12/computer-applications/ncert-books",
-        syllabus: "/class/class-12/computer-applications/syllabus",
-        "previous-year-papers":
-          "/class/class-12/computer-applications/previous-year-papers",
-        "recommended-books":
-          "/class/class-12/computer-applications/recommended-books",
+        notes: "/notes?class=class_12&subject=computer_applications",
+        "ncert-books":
+          "https://cbseacademic.nic.in/web_material/Curriculum21/publication/srsec/817-Typograhpy&Comp. class- XII.PDF",
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/Curriculum26/SrSec/817-TYPOGRAPHY-COMPUTER-APPLICATIONS_XII.pdf",
+        "previous-year-papers": "https://t.me/YouthAf",
+        "recommended-books": "https://t.me/YouthAf",
       },
       "web-applications": {
-        notes: "/class/class-12/web-applications/notes",
-        "ncert-books": "/class/class-12/web-applications/ncert-books",
-        syllabus: "/class/class-12/web-applications/syllabus",
-        "previous-year-papers":
-          "/class/class-12/web-applications/previous-year-papers",
-        "recommended-books":
-          "/class/class-12/web-applications/recommended-books",
+        notes: "/notes?class=class_12&subject=web_applications",
+        "ncert-books":
+          "https://cbseacademic.nic.in/web_material/Curriculum26/publication/srsec/803-WebApplication-XII.pdf",
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/Curriculum26/SrSec/803-WebApplication_XII.pdf",
+        "previous-year-papers": "https://t.me/YouthAf",
+        "recommended-books": "https://t.me/YouthAf",
       },
       "data-science": {
-        notes: "/class/class-12/data-science/notes",
-        "ncert-books": "/class/class-12/data-science/ncert-books",
-        syllabus: "/class/class-12/data-science/syllabus",
-        "previous-year-papers":
-          "/class/class-12/data-science/previous-year-papers",
-        "recommended-books": "/class/class-12/data-science/recommended-books",
+        notes: "/notes?class=class_12&subject=data_science",
+        "ncert-books":
+          "https://cbseacademic.nic.in/web_material/codeingDS/classXII_DS_Student_Handbook.pdf",
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/Curriculum25/SrSec/844-DATASCIENCE.pdf",
+        "previous-year-papers": "https://t.me/YouthAf",
+        "recommended-books": "https://t.me/YouthAf",
       },
     },
   },

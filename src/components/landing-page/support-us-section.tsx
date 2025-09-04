@@ -6,10 +6,10 @@ const SupportUsSection = () => {
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <h2 className="text-2xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
             Support Our Mission!
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-md text-muted-foreground max-w-2xl mx-auto">
             Help us continue providing quality educational content for students
             worldwide
           </p>
