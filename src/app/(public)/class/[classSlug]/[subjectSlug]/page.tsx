@@ -84,7 +84,7 @@ const SubjectPage = async ({ params }: SubjectPageProps) => {
 
           return (
             <Link
-              href={subjectResourceLink}
+              href={`${subjectResourceLink}`}
               key={resource.slug}
               target="_blank"
               rel="noopener noreferrer"

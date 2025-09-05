@@ -41,7 +41,7 @@ import { classEnum, subjectEnum } from "@/server/db/schema";
 import { IconImageInPicture, IconSparkles } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface NotesFormProps {
@@ -70,7 +70,6 @@ const fetchNoteContent = async (slug: string): Promise<{ note: ListNote }> => {
 const NotesForm = ({ slug }: NotesFormProps) => {
   const [isSettingValues, setIsSettingValues] = useState(true);
   const [noteId, setNoteId] = useState<string | null>(null);
-  const editorRef = useRef<any>(null);
   const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof NoteCreationSchema>>({
@@ -260,7 +259,7 @@ const NotesForm = ({ slug }: NotesFormProps) => {
 
       form.reset({
         title: data.note.title,
-        content: JSON.stringify(data.note.content),
+        content: data.note.content,
         slug: data.note.slug,
         thumbnailKey: data.note?.thumbnailKey ?? "",
         class: data.note.class || undefined,

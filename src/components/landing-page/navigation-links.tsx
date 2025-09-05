@@ -59,7 +59,7 @@ export default function NavigationLinks({
         onClick={onLinkClick}
       >
         <IconBook2 className="mr-2 h-4 w-4" />
-        About Me
+        About
       </Link>
 
       {/* YouTube Link */}
