@@ -13,7 +13,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import DNDFileUploader from "@/components/dnd-file-uploader/uploader";
-import RichTextEditor from "@/components/rich-text-editor/editor";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -33,6 +32,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
+import { Editor } from "@/components/blocks/editor-x/editor";
 import {
   Select,
   SelectContent,
@@ -48,7 +48,35 @@ const NotesForm = () => {
     resolver: zodResolver(NoteCreationSchema),
     defaultValues: {
       title: "",
-      content: "<p>Start writing your note...</p>",
+      content: JSON.stringify({
+        root: {
+          children: [
+            {
+              children: [
+                {
+                  detail: 0,
+                  format: 0,
+                  mode: "normal",
+                  style: "",
+                  text: "Hello World 🚀",
+                  type: "text",
+                  version: 1,
+                },
+              ],
+              direction: "ltr",
+              format: "",
+              indent: 0,
+              type: "paragraph",
+              version: 1,
+            },
+          ],
+          direction: "ltr",
+          format: "",
+          indent: 0,
+          type: "root",
+          version: 1,
+        },
+      }),
       slug: "",
       isPublished: false,
       attachments: [],
@@ -173,9 +201,15 @@ const NotesForm = () => {
                   Note Content
                 </FormLabel>
                 <FormControl>
-                  <RichTextEditor
+                  {/* <RichTextEditor
                     value={field.value}
                     onChange={field.onChange}
+                  /> */}
+                  <Editor
+                    editorSerializedState={JSON.parse(field.value)}
+                    onSerializedChange={(value) =>
+                      field.onChange(JSON.stringify(value))
+                    }
                   />
                 </FormControl>
                 <FormMessage />

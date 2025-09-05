@@ -62,15 +62,15 @@ export const subjects = [
       "AI concepts exploration and machine learning basics introduction",
   },
   {
-    name: "Information Technology",
-    slug: "information-technology",
-    description: "IT fundamentals covering hardware and software applications",
-  },
-  {
     name: "Computer Applications",
     slug: "computer-applications",
     description:
       "Practical software applications and office productivity tools",
+  },
+  {
+    name: "Information Technology",
+    slug: "information-technology",
+    description: "IT fundamentals covering hardware and software applications",
   },
   {
     name: "Web Applications",

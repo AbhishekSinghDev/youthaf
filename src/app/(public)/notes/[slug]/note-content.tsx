@@ -1,6 +1,6 @@
 "use client";
 
-import RichTextRenderer from "@/components/rich-text-editor/renderer";
+import Preview from "@/components/blocks/editor-x/preview";
 import PDFViewer from "@/components/shared/pdf-viewer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { fetchNoteContent } from "@/lib/functions";
@@ -33,7 +33,7 @@ const NoteContent = ({ slug }: { slug: string }) => {
     ) || [];
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8">
       {/* Banner Section */}
       <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-muted">
         <Image
@@ -65,7 +65,7 @@ const NoteContent = ({ slug }: { slug: string }) => {
       {/* Content Section */}
       <section className="space-y-6">
         <div className="prose-container">
-          {note.content ? (
+          {/* {note.content ? (
             <RichTextRenderer
               content={note.content}
               className="prose-lg max-w-none"
@@ -75,7 +75,9 @@ const NoteContent = ({ slug }: { slug: string }) => {
               <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No content available for this note.</p>
             </div>
-          )}
+          )} */}
+
+          <Preview editorSerializedState={JSON.parse(note.content)} />
         </div>
       </section>
 

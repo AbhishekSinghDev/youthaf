@@ -13,8 +13,8 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { Editor } from "@/components/blocks/editor-x/editor";
 import DNDFileUploader from "@/components/dnd-file-uploader/uploader";
-import RichTextEditor from "@/components/rich-text-editor/editor";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -77,7 +77,35 @@ const NotesForm = ({ slug }: NotesFormProps) => {
     resolver: zodResolver(NoteCreationSchema),
     defaultValues: {
       title: "",
-      content: "<p>Start writing your note...</p>",
+      content: JSON.stringify({
+        root: {
+          children: [
+            {
+              children: [
+                {
+                  detail: 0,
+                  format: 0,
+                  mode: "normal",
+                  style: "",
+                  text: "Hello World 🚀",
+                  type: "text",
+                  version: 1,
+                },
+              ],
+              direction: "ltr",
+              format: "",
+              indent: 0,
+              type: "paragraph",
+              version: 1,
+            },
+          ],
+          direction: "ltr",
+          format: "",
+          indent: 0,
+          type: "root",
+          version: 1,
+        },
+      }),
       slug: "",
       isPublished: false,
       attachments: [],
@@ -230,14 +258,9 @@ const NotesForm = ({ slug }: NotesFormProps) => {
     if (data?.note) {
       setNoteId(data.note.id);
 
-      const noteContent =
-        typeof data.note.content === "string"
-          ? JSON.parse(data.note.content)
-          : data.note.content;
-
       form.reset({
         title: data.note.title,
-        content: JSON.stringify(noteContent),
+        content: JSON.stringify(data.note.content),
         slug: data.note.slug,
         thumbnailKey: data.note?.thumbnailKey ?? "",
         class: data.note.class || undefined,
@@ -252,11 +275,6 @@ const NotesForm = ({ slug }: NotesFormProps) => {
       });
 
       setIsSettingValues(false);
-
-      // Manually set editor content
-      if (editorRef.current) {
-        editorRef.current.commands.setContent(noteContent);
-      }
     }
   }, [data, form]);
 
@@ -339,10 +357,11 @@ const NotesForm = ({ slug }: NotesFormProps) => {
                   Note Content
                 </FormLabel>
                 <FormControl>
-                  <RichTextEditor
-                    ref={editorRef}
-                    value={field.value}
-                    onChange={field.onChange}
+                  <Editor
+                    editorSerializedState={JSON.parse(field.value)}
+                    onSerializedChange={(value) =>
+                      field.onChange(JSON.stringify(value))
+                    }
                   />
                 </FormControl>
                 <FormMessage />

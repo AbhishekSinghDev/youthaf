@@ -1,5 +1,6 @@
 import Footer from "@/components/landing-page/footer";
 import Header from "@/components/landing-page/header";
+import TopNav from "@/components/shared/top-nav";
 import { Metadata } from "next";
 
 interface PublicRoutesLayoutProps {
@@ -74,6 +75,7 @@ export const metadata: Metadata = {
 const PublicRoutesLayout = ({ children }: PublicRoutesLayoutProps) => {
   return (
     <main className="min-h-screen dark:bg-[#111111]">
+      <TopNav />
       <Header />
       <div className="pt-4 max-w-2xl mx-auto px-4">{children}</div>
       <Footer />
