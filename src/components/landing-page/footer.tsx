@@ -1,4 +1,4 @@
-import { IconHeartFilled } from "@tabler/icons-react";
+import { abhishekSocials, ayushSocials } from "@/lib/constant";
 import Link from "next/link";
 import Logo from "../shared/logo";
 
@@ -13,13 +13,9 @@ export default function Footer() {
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm text-gray-500 dark:text-gray-400 mb-4">
-            <span>Made with</span>
-            <span className="text-red-500 inline-flex items-center align-middle">
-              <IconHeartFilled color="red" size={14} className="inline-block" />
-            </span>
-            <span>by</span>
+            <span>Made by</span>
             <Link
-              href="https://abhisheksingh.me"
+              href={abhishekSocials.website}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200 underline underline-offset-2 decoration-1 hover:decoration-2"
@@ -28,7 +24,7 @@ export default function Footer() {
             </Link>
             <span>and</span>
             <Link
-              href="https://www.linkedin.com/in/ayush-poddar-8bb739245/"
+              href={ayushSocials.instagram}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200 underline underline-offset-2 decoration-1 hover:decoration-2"

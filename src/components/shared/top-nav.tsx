@@ -15,18 +15,13 @@ const TopNav = () => {
     <header className="w-full">
       {/* Top bar with links and social icons */}
       <div className="bg-accent-foreground text-white py-2 px-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center text-sm">
-          <div className="flex gap-x-4">
+        <div className="flex justify-between items-center text-sm">
+          <div className="flex items-center gap-x-6">
             <Link href="/about-us" className="hover:text-gray-300">
               About Us
             </Link>
-            <span>-</span>
             <Link href="#" className="hover:text-gray-300">
               Contact Us
-            </Link>
-            <span>-</span>
-            <Link href="#" className="hover:text-gray-300">
-              Privacy Policy
             </Link>
           </div>
           <div className="flex space-x-3">

@@ -14,7 +14,7 @@ export default async function Header() {
   const isAuthenticated = !!session?.user;
 
   return (
-    <header className="sticky top-0 z-40 w-full transition-all duration-200 backdrop-blur-xs">
+    <header className="sticky top-0 z-40 w-full transition-all duration-200 backdrop-blur-xs bg-white dark:bg-transparent">
       <div className="py-4 max-w-2xl mx-auto px-4">
         <div className="flex items-center justify-between">
           <Logo showBrandName />

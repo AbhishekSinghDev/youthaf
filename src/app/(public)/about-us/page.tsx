@@ -1,4 +1,5 @@
-import { ayushSocials, subjects } from "@/lib/constant";
+import { abhishekSocials, ayushSocials, subjects } from "@/lib/constant";
+import { IconBrandGithub, IconWorld } from "@tabler/icons-react";
 import {
   Code,
   GraduationCap,
@@ -18,74 +19,173 @@ const AboutUs = () => {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="py-20 px-4">
+        <div className="max-w-6xl mx-auto text-center">
+          <h1 className="text-5xl lg:text-6xl font-bold mb-6">
+            Meet Our <span className="text-primary">Team</span>
+          </h1>
+          <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-4xl mx-auto">
+            Passionate educators and content creators dedicated to make Computer
+            Science education accessible and engaging for students across
+            Classes 9-12.
+          </p>
+        </div>
+      </section>
+
+      {/* Team Section */}
+      <section className="py-20 px-4 bg-muted/50">
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Profile Image */}
-            <div className="flex justify-center lg:justify-start">
-              <div className="relative">
-                <div className="w-80 h-80 rounded-3xl overflow-hidden shadow-xl">
+          <h2 className="section-title text-4xl font-bold text-center mb-12">
+            Our Team
+          </h2>
+
+          <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
+            {/* Founder - Ayush Poddar */}
+            <div className="card p-8 text-center hover:shadow-lg transition-shadow">
+              <div className="relative mb-3">
+                <div className="size-60 rounded-2xl overflow-hidden mx-auto shadow-lg">
                   <Image
                     src="/ayush.jpeg"
                     alt="Ayush Poddar"
-                    width={320}
-                    height={320}
+                    width={1000}
+                    height={1000}
                     className="object-cover w-full h-full"
                   />
                 </div>
-                <div className="absolute -bottom-4 -right-4 w-16 h-16 bg-primary rounded-2xl flex items-center justify-center">
-                  <Code className="w-8 h-8 text-primary-foreground" />
-                </div>
               </div>
-            </div>
 
-            {/* Introduction */}
-            <div className="text-center lg:text-left">
-              <h1 className="text-5xl lg:text-6xl font-bold mb-6">
-                Hi, I'm <span className="text-primary">Ayush Poddar</span>
-              </h1>
-              <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-                Software Engineer, Passionate Educator & Content Creator helping
-                students master Computer Science fundamentals through engaging
-                YouTube tutorials.
+              <h3 className="text-xl font-bold mb-2">Ayush Poddar</h3>
+              <p className="text-primary font-semibold mb-4">Founder</p>
+              <p className="text-muted-foreground mb-6 text-sm">
+                Software Engineer & Passionate Educator helping students master
+                Computer Science fundamentals through engaging YouTube
+                tutorials.
               </p>
 
-              {/* Social Links */}
-              <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+              <div className="flex flex-wrap gap-2 justify-center">
                 <Link
                   href={ayushSocials.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:shadow-lg transition-shadow"
+                  className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:shadow-md transition-shadow"
                 >
-                  <Instagram className="w-5 h-5" />
-                  Instagram
+                  <Instagram className="w-4 h-4" />
                 </Link>
                 <Link
                   href={ayushSocials.youtube}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors"
+                  className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                 >
-                  <Youtube className="w-5 h-5" />
-                  YouTube
+                  <Youtube className="w-4 h-4" />
                 </Link>
                 <Link
                   href={ayushSocials.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+                  className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  <Linkedin className="w-5 h-5" />
-                  LinkedIn
+                  <Linkedin className="w-4 h-4" />
                 </Link>
                 <Link
                   href={ayushSocials.twitter}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-6 py-3 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors"
+                  className="p-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
                 >
-                  <Twitter className="w-5 h-5" />
-                  Twitter
+                  <Twitter className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Co-Founder */}
+            <div className="card p-8 text-center hover:shadow-lg transition-shadow">
+              <div className="relative mb-3">
+                <div className="size-60 rounded-2xl overflow-hidden mx-auto shadow-lg">
+                  <Image
+                    src="/abhishek.jpeg"
+                    alt="Abhishek Singh"
+                    width={1000}
+                    height={1000}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              </div>
+
+              <h3 className="text-xl font-bold mb-2">Abhishek Singh</h3>
+              <p className="text-blue-600 font-semibold mb-4">Co-Founder</p>
+              <p className="text-muted-foreground mb-6 text-sm">
+                Based in Delhi, I'm a Fullstack developer passionate about
+                building a modern web application that users love.
+              </p>
+
+              <div className="flex flex-wrap gap-2 justify-center">
+                <Link
+                  href={abhishekSocials.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:shadow-md transition-shadow"
+                >
+                  <IconWorld className="w-4 h-4" />
+                </Link>
+                <Link
+                  href={abhishekSocials.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 bg-black text-white rounded-lg transition-colors"
+                >
+                  <IconBrandGithub className="w-4 h-4" />
+                </Link>
+                <Link
+                  href={abhishekSocials.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Linkedin className="w-4 h-4" />
+                </Link>
+                <Link
+                  href={abhishekSocials.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:shadow-md transition-shadow"
+                >
+                  <Instagram className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Editor */}
+            <div className="card p-8 text-center hover:shadow-lg transition-shadow">
+              <div className="relative mb-3">
+                <div className="size-60 rounded-2xl overflow-hidden mx-auto shadow-lg">
+                  <Image
+                    src="/vinan.jpeg"
+                    alt="Vinan Yadav"
+                    width={1000}
+                    height={1000}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              </div>
+
+              <h3 className="text-xl font-bold mb-2">Vinan Yadav</h3>
+              <p className="text-green-600 font-semibold mb-4">
+                Content Editor
+              </p>
+              <p className="text-muted-foreground mb-6 text-sm">
+                Video editor passionate about creating engaging educational
+                content. Brings fresh perspective and creative storytelling to
+                make learning more visual and accessible.
+              </p>
+
+              <div className="flex flex-wrap gap-2 justify-center">
+                <Link
+                  href="https://www.instagram.com/vimanshu__yadav?igsh=MXNxbHN4NGNjZTdsbw=="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:shadow-md transition-shadow"
+                >
+                  <Instagram className="w-4 h-4" />
                 </Link>
               </div>
             </div>
@@ -94,10 +194,10 @@ const AboutUs = () => {
       </section>
 
       {/* About Section */}
-      <section className="py-20 px-4 bg-muted/50">
+      <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto">
           <h2 className="section-title text-4xl font-bold text-center mb-12">
-            About Me
+            About Us
           </h2>
 
           <div className="grid md:grid-cols-2 gap-8 mb-12">
@@ -106,13 +206,12 @@ const AboutUs = () => {
                 <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
                   <Code className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold">Software Engineer</h3>
+                <h3 className="text-xl font-semibold">Expert Team</h3>
               </div>
               <p className="text-muted-foreground">
-                With years of experience in software development, I bring
-                real-world programming expertise to my teaching. I love creating
-                solutions that solve complex problems and enjoy sharing this
-                passion with my students.
+                Our diverse team combines years of software development
+                experience with educational expertise. We bring real-world
+                programming knowledge to make learning engaging and practical.
               </p>
             </div>
 
@@ -121,34 +220,33 @@ const AboutUs = () => {
                 <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center">
                   <GraduationCap className="w-6 h-6 text-accent" />
                 </div>
-                <h3 className="text-xl font-semibold">Passionate Educator</h3>
+                <h3 className="text-xl font-semibold">Educational Focus</h3>
               </div>
               <p className="text-muted-foreground">
-                Teaching is my calling. I believe in making complex Computer
-                Science concepts simple and accessible. My goal is to inspire
-                the next generation of programmers and problem solvers.
+                We believe in making complex Computer Science concepts simple
+                and accessible. Our goal is to inspire the next generation of
+                programmers and problem solvers through quality content.
               </p>
             </div>
           </div>
 
           <div className="text-center">
             <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-              My journey combines the technical rigor of software engineering
-              with the joy of education. I'm dedicated to creating content that
-              not only teaches but inspires students to explore the fascinating
-              world of computer science. Every line of code I write and every
-              lesson I teach is driven by my passion for technology and
-              learning.
+              Our journey combines technical rigor with educational passion.
+              We're dedicated to creating content that not only teaches but
+              inspires students to explore the fascinating world of computer
+              science. Every resource we create is driven by our collective
+              passion for technology and learning.
             </p>
           </div>
         </div>
       </section>
 
-      {/* What I Teach Section */}
+      {/* What We Teach Section */}
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="section-title text-4xl font-bold text-center mb-4">
-            What I Teach
+            What We Teach
           </h2>
           <p className="section-subtitle text-center mb-12">
             Comprehensive Computer Science Education for Classes 9-12
@@ -193,10 +291,10 @@ const AboutUs = () => {
           <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <Heart className="w-8 h-8 text-primary" />
           </div>
-          <h2 className="section-title text-4xl font-bold mb-6">My Mission</h2>
+          <h2 className="section-title text-4xl font-bold mb-6">Our Mission</h2>
           <p className="text-xl text-muted-foreground leading-relaxed mb-8">
             To democratize quality Computer Science education and make it
-            accessible to every student. I believe that with the right guidance
+            accessible to every student. We believe that with the right guidance
             and resources, anyone can master programming and technology
             concepts, regardless of their background.
           </p>
@@ -234,7 +332,7 @@ const AboutUs = () => {
             Let's Connect
           </h2>
           <p className="text-xl text-muted-foreground mb-12">
-            Have questions or want to collaborate? I'd love to hear from you!
+            Have questions or want to collaborate? We'd love to hear from you!
           </p>
 
           <div className="flex flex-wrap gap-4 justify-center">

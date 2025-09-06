@@ -1,12 +1,6 @@
 "use client";
 
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
@@ -42,7 +36,6 @@ interface NavDropdownProps {
 
 export default function NavDropdown({ trigger }: NavDropdownProps) {
   const { resolvedTheme } = useTheme();
-  const isDarkMode = resolvedTheme === "dark";
 
   return (
     <div>
@@ -52,7 +45,7 @@ export default function NavDropdown({ trigger }: NavDropdownProps) {
         <DropdownMenuContent align="end">
           <div className="p-6 space-y-6">
             {/* Classes Accordion */}
-            <div>
+            {/* <div>
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
                 {navigationMenuData.classes.title}
               </h3>
@@ -82,7 +75,7 @@ export default function NavDropdown({ trigger }: NavDropdownProps) {
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
-            </div>
+            </div> */}
 
             {/* Quick Links */}
             <div>
@@ -146,7 +139,7 @@ export default function NavDropdown({ trigger }: NavDropdownProps) {
                         } shadow-sm group-hover:shadow-md transition-all duration-200`}
                       >
                         {typeof item.icon === "string" &&
-                        item.icon.startsWith("http") ? (
+                        item.icon?.startsWith("http") ? (
                           <Image
                             src={item.icon || "/placeholder.svg"}
                             alt=""

@@ -473,6 +473,13 @@ export const ayushSocials = {
   telegram: "https://t.me/YouthAf",
 };
 
+export const abhishekSocials = {
+  website: "https://abhisheksingh.me",
+  instagram: "https://www.instagram.com/abhishek.singhu?igsh=N2hrNW1hNjk4c3Rq",
+  linkedin: "https://www.linkedin.com/in/abhishek-singh-dev/",
+  github: "https://github.com/AbhishekSinghDev",
+};
+
 // Helper functions for easy data access
 export const getClassBySlug = (slug: string) => {
   return Object.values(classesData).find(
