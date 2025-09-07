@@ -3,7 +3,7 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { CardContent, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Class, ListNote, Subject } from "@/lib/type";
 import { constructFileUrl } from "@/lib/utils";
@@ -52,7 +52,7 @@ const fetchAllNotes = async (
 };
 
 const NoteCardSkeleton = () => (
-  <Card className="border shadow-sm">
+  <div className="border shadow-sm rounded-lg overflow-hidden">
     <div className="relative">
       <Skeleton className="aspect-[4/3] w-full" />
       <div className="absolute top-3 left-3">
@@ -77,7 +77,7 @@ const NoteCardSkeleton = () => (
         <Skeleton className="h-8 w-8 rounded-full" />
       </div>
     </CardContent>
-  </Card>
+  </div>
 );
 
 const EmptyState = () => (
@@ -168,7 +168,7 @@ const NotesContent = () => {
           !isError &&
           publishedNotes.map((note) => (
             <Link href={`/notes/${note.slug}`} key={note.id}>
-              <Card className="border shadow-sm hover:shadow-md">
+              <div className="border shadow-sm hover:shadow-md rounded-lg overflow-hidden">
                 {/* Thumbnail with badges */}
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
@@ -222,7 +222,7 @@ const NotesContent = () => {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
+              </div>
             </Link>
           ))}
       </div>
