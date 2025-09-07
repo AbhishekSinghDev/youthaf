@@ -1,13 +1,20 @@
 "use client";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Class, ListNote, Subject } from "@/lib/type";
 import { constructFileUrl } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { FileText, RefreshCw } from "lucide-react";
+import {
+  BookOpen,
+  Calendar,
+  FileText,
+  GraduationCap,
+  RefreshCw,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -45,14 +52,30 @@ const fetchAllNotes = async (
 };
 
 const NoteCardSkeleton = () => (
-  <Card className="overflow-hidden">
-    <Skeleton className="aspect-video w-full" />
-    <CardHeader className="px-6 pt-6 pb-4">
-      <Skeleton className="h-5 w-3/4" />
-      <Skeleton className="h-4 w-1/2" />
-    </CardHeader>
-    <CardContent className="px-6 pb-6">
-      <Skeleton className="h-4 w-1/3" />
+  <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-background to-muted/30 shadow-sm hover:shadow-xl transition-all duration-500">
+    <div className="relative">
+      <Skeleton className="aspect-[4/3] w-full" />
+      <div className="absolute top-3 left-3">
+        <Skeleton className="h-5 w-16 rounded-full" />
+      </div>
+      <div className="absolute top-3 right-3">
+        <Skeleton className="h-5 w-20 rounded-full" />
+      </div>
+    </div>
+
+    <CardContent className="p-6 space-y-4">
+      <div className="space-y-2">
+        <Skeleton className="h-6 w-full" />
+        <Skeleton className="h-6 w-3/4" />
+      </div>
+
+      <div className="flex items-center justify-between pt-2">
+        <div className="flex items-center space-x-2">
+          <Skeleton className="h-4 w-4 rounded" />
+          <Skeleton className="h-4 w-24" />
+        </div>
+        <Skeleton className="h-8 w-8 rounded-full" />
+      </div>
     </CardContent>
   </Card>
 );
@@ -102,6 +125,14 @@ const NotesContent = () => {
 
   const publishedNotes = data?.notes.filter((note) => note.isPublished) || [];
 
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(new Date(date));
+  };
+
   return (
     <div className="max-w-full mx-auto lg:px-8 lg:py-4">
       {/* Header */}
@@ -116,10 +147,10 @@ const NotesContent = () => {
       </div>
 
       {/* Notes Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {isLoading && (
           <>
-            {Array.from({ length: 8 }).map((_, index) => (
+            {Array.from({ length: 6 }).map((_, index) => (
               <NoteCardSkeleton key={index} />
             ))}
           </>
@@ -136,24 +167,70 @@ const NotesContent = () => {
         {!isLoading &&
           !isError &&
           publishedNotes.map((note) => (
-            <Link href={`/notes/${note.slug}`} key={note.id}>
-              <Card className="overflow-hidden group cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg border-border/50 hover:border-border">
-                {/* Thumbnail */}
-                <div className="aspect-video object-cover bg-muted overflow-hidden relative">
+            <Link href={`/notes/${note.slug}`} key={note.id} className="group">
+              <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-background to-muted/30 shadow-sm hover:shadow-xl transition-all duration-500 group-hover:-translate-y-2">
+                {/* Thumbnail with overlay badges */}
+                <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
                     src={constructFileUrl(note.thumbnailKey)}
                     alt={note.title}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
+
+                  {/* Class badge */}
+                  <div className="absolute top-3 left-3">
+                    <Badge
+                      variant="secondary"
+                      className="bg-background/90 text-foreground backdrop-blur-sm border-0 shadow-sm"
+                    >
+                      <GraduationCap className="w-3 h-3 mr-1" />
+                      Class {note.class}
+                    </Badge>
+                  </div>
+
+                  {/* Subject badge */}
+                  <div className="absolute top-3 right-3">
+                    <Badge
+                      variant="outline"
+                      className="bg-primary/90 text-primary-foreground border-0 backdrop-blur-sm shadow-sm"
+                    >
+                      <BookOpen className="w-3 h-3 mr-1" />
+                      {note.subject}
+                    </Badge>
+                  </div>
                 </div>
 
-                <CardHeader className="px-6 pt-6 pb-4">
-                  <CardTitle className="line-clamp-2 leading-tight text-base font-semibold group-hover:text-primary transition-colors duration-200">
-                    {note.title}
-                  </CardTitle>
-                </CardHeader>
+                {/* Content */}
+                <CardContent className="p-6">
+                  <div className="space-y-4">
+                    {/* Title */}
+                    <CardTitle className="text-lg font-semibold leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-200">
+                      {note.title}
+                    </CardTitle>
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-between pt-2 border-t border-border/50">
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        {formatDate(note.createdAt)}
+                      </div>
+
+                      {/* Attachment indicator */}
+                      {note.attachments && note.attachments.length > 0 && (
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted group-hover:bg-primary/10 transition-colors duration-200">
+                          <FileText className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-200" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+
+                {/* Hover effect border */}
+                <div className="absolute inset-0 rounded-lg ring-2 ring-primary/0 group-hover:ring-primary/20 transition-all duration-300" />
               </Card>
             </Link>
           ))}

@@ -92,12 +92,19 @@ const SelectClassSection = () => {
       {/* Additional Info */}
       <div className="mt-16 text-center">
         <div className="p-8 rounded-2xl bg-gradient-to-r from-muted/30 to-muted/50 border border-border/50">
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            Each class includes comprehensive study materials, practice
-            questions, sample papers, and expert guidance to help you excel in
-            your academic journey. Select your class to get started with
-            personalized learning.
-          </p>
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold text-foreground">
+              🚀 Everything You Need to Ace Your Exams!
+            </h3>
+            <p className="text-base text-muted-foreground leading-relaxed">
+              Get cool study notes, practice tests, and exam papers for your
+              class. Pick your grade and start learning in a fun way that
+              actually works!
+            </p>
+            <div className="flex items-center justify-center gap-2 text-sm text-primary font-medium">
+              <span>✨ Made by students, for students</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>

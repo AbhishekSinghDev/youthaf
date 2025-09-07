@@ -60,7 +60,7 @@ const Preview = ({ editorSerializedState, className }: PreviewProps) => {
                 contentEditable={
                   <ContentEditable
                     placeholder=""
-                    className="ContentEditable__root relative block min-h-32 overflow-auto px-8 py-4 focus:outline-none"
+                    className="ContentEditable__root relative block min-h-32 overflow-auto px-4 py-4 focus:outline-none"
                   />
                 }
                 ErrorBoundary={LexicalErrorBoundary}

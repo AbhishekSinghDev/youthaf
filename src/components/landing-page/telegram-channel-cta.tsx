@@ -29,7 +29,7 @@ const TelegramChannelCTA = () => {
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4 md:w-5 md:h-5 text-primary-foreground/70" />
               <span className="text-primary-foreground/80 text-sm md:text-base">
-                2700+ Students
+                3000+ Students
               </span>
             </div>
             <div className="flex items-center gap-2">

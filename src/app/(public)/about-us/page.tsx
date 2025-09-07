@@ -168,7 +168,7 @@ const AboutUs = () => {
                 </div>
               </div>
 
-              <h3 className="text-xl font-bold mb-2">Vinan Yadav</h3>
+              <h3 className="text-xl font-bold mb-2">Viman Yadav</h3>
               <p className="text-green-600 font-semibold mb-4">
                 Content Editor
               </p>

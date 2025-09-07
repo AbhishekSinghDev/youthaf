@@ -1,16 +1,11 @@
 "use client";
 
-import { useIsMobile } from "@/hooks/use-mobile";
 import { ayushSocials } from "@/lib/constant";
 import { IconBrandTelegram } from "@tabler/icons-react";
 import { Instagram, Twitter, Youtube } from "lucide-react";
 import Link from "next/link";
 
 const TopNav = () => {
-  const isMobile = useIsMobile();
-
-  if (isMobile) return null;
-
   return (
     <header className="w-full">
       {/* Top bar with links and social icons */}

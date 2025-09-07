@@ -30,9 +30,9 @@ const ClassPage = async ({ params }: ClassPageProps) => {
       <div className="text-center mb-16">
         <div className="flex items-center justify-center gap-3 mb-6">
           <div className="p-3 rounded-2xl bg-gradient-to-br from-[#7A7FEE] to-[#9D7FEE] shadow-lg">
-            <GraduationCap className="w-7 h-7 text-white" />
+            <GraduationCap className="size-5 md:size-7 text-white" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+          <h1 className="text-2xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
             {classData.title} Subjects
           </h1>
         </div>
