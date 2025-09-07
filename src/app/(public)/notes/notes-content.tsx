@@ -52,7 +52,7 @@ const fetchAllNotes = async (
 };
 
 const NoteCardSkeleton = () => (
-  <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-background to-muted/30 shadow-sm hover:shadow-xl transition-all duration-500">
+  <Card className="border shadow-sm">
     <div className="relative">
       <Skeleton className="aspect-[4/3] w-full" />
       <div className="absolute top-3 left-3">
@@ -167,25 +167,22 @@ const NotesContent = () => {
         {!isLoading &&
           !isError &&
           publishedNotes.map((note) => (
-            <Link href={`/notes/${note.slug}`} key={note.id} className="group">
-              <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-background to-muted/30 shadow-sm hover:shadow-xl transition-all duration-500 group-hover:-translate-y-2">
-                {/* Thumbnail with overlay badges */}
+            <Link href={`/notes/${note.slug}`} key={note.id}>
+              <Card className="border shadow-sm hover:shadow-md">
+                {/* Thumbnail with badges */}
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
                     src={constructFileUrl(note.thumbnailKey)}
                     alt={note.title}
                     fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="object-cover"
                   />
-
-                  {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
 
                   {/* Class badge */}
                   <div className="absolute top-3 left-3">
                     <Badge
                       variant="secondary"
-                      className="bg-background/90 text-foreground backdrop-blur-sm border-0 shadow-sm"
+                      className="bg-white/90 text-gray-800"
                     >
                       <GraduationCap className="w-3 h-3 mr-1" />
                       Class {note.class}
@@ -194,10 +191,7 @@ const NotesContent = () => {
 
                   {/* Subject badge */}
                   <div className="absolute top-3 right-3">
-                    <Badge
-                      variant="outline"
-                      className="bg-primary/90 text-primary-foreground border-0 backdrop-blur-sm shadow-sm"
-                    >
+                    <Badge variant="default">
                       <BookOpen className="w-3 h-3 mr-1" />
                       {note.subject}
                     </Badge>
@@ -208,12 +202,12 @@ const NotesContent = () => {
                 <CardContent className="p-6">
                   <div className="space-y-4">
                     {/* Title */}
-                    <CardTitle className="text-lg font-semibold leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-200">
+                    <CardTitle className="text-lg font-semibold leading-tight line-clamp-2">
                       {note.title}
                     </CardTitle>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between pt-2 border-t border-border/50">
+                    <div className="flex items-center justify-between pt-2 border-t">
                       <div className="flex items-center text-sm text-muted-foreground">
                         <Calendar className="w-4 h-4 mr-2" />
                         {formatDate(note.createdAt)}
@@ -221,16 +215,13 @@ const NotesContent = () => {
 
                       {/* Attachment indicator */}
                       {note.attachments && note.attachments.length > 0 && (
-                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted group-hover:bg-primary/10 transition-colors duration-200">
-                          <FileText className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-200" />
+                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted">
+                          <FileText className="w-4 h-4 text-muted-foreground" />
                         </div>
                       )}
                     </div>
                   </div>
                 </CardContent>
-
-                {/* Hover effect border */}
-                <div className="absolute inset-0 rounded-lg ring-2 ring-primary/0 group-hover:ring-primary/20 transition-all duration-300" />
               </Card>
             </Link>
           ))}
