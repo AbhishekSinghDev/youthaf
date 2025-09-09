@@ -1,7 +1,7 @@
 import { Class, Subject } from "@/lib/type";
 import { db } from "@/server/db";
 import { note } from "@/server/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -22,11 +22,14 @@ export async function GET(req: Request) {
 
     const noteData = await db.query.note.findMany({
       where: and(...whereConditions),
+      orderBy: desc(note.createdAt),
       columns: {
         id: true,
         title: true,
         slug: true,
         content: true,
+        class: true,
+        subject: true,
         thumbnailKey: true,
         isPublished: true,
         createdAt: true,
