@@ -1,15 +1,14 @@
 import { db } from "@/server/db";
 import { note } from "@/server/db/schema";
 import { requireAdmin } from "@/server/helper";
-import { desc, eq } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const session = await requireAdmin();
+    await requireAdmin();
 
     const notes = await db.query.note.findMany({
-      where: eq(note.createdBy, session.user.id),
       with: {
         attachments: {
           columns: {

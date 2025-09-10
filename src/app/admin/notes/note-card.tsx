@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { env } from "@/env";
 import { ListNote } from "@/lib/type";
 import { IconCopy, IconEye, IconEyeOff, IconPencil } from "@tabler/icons-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import {
   ArrowRight,
@@ -22,12 +23,61 @@ import {
   Paperclip,
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 type NoteCardProps = {
   note: ListNote;
 };
 
 const NoteCard = ({ note }: NoteCardProps) => {
+  const queryClient = useQueryClient();
+
+  const { mutate: togglePublish, isPending: isToggling } = useMutation({
+    mutationKey: ["toggle-publish-note"],
+    mutationFn: async (isPublished: boolean) => {
+      const response = await fetch("/api/admin/note/publish", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: note.id,
+          isPublished,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update note");
+      }
+
+      return response.json();
+    },
+    onSuccess: (data, isPublished) => {
+      toast.success(data.message);
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+    },
+    onError: (error) => {
+      toast.error("Failed to update note");
+      console.error("Error updating note:", error);
+    },
+  });
+
+  const { mutate: deleteNote, isPending: isDeletingNote } = useMutation({
+    mutationKey: ["delete-note"],
+    mutationFn: async () => {
+      const response = await fetch("/api/admin/note/delete", {
+        method: "POST",
+        body: JSON.stringify({ id: note.id }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create note");
+      }
+
+      return response.json();
+    },
+  });
+
   return (
     <Card className="group hover:shadow-md transition-all duration-200 border-l-4 border-l-primary/20 hover:border-l-primary">
       <CardHeader className="pb-3">
@@ -49,7 +99,7 @@ const NoteCard = ({ note }: NoteCardProps) => {
                 ) : (
                   <>
                     <EyeOff className="h-3 w-3 mr-1" />
-                    Draft
+                    Un Published
                   </>
                 )}
               </Badge>
@@ -89,12 +139,19 @@ const NoteCard = ({ note }: NoteCardProps) => {
               </DropdownMenuItem>
               <Separator />
               {note.isPublished ? (
-                <DropdownMenuItem className="text-destructive">
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onClick={() => togglePublish(false)}
+                  disabled={isToggling}
+                >
                   <IconEyeOff className="h-4 w-4" />
                   Un Publish
                 </DropdownMenuItem>
               ) : (
-                <DropdownMenuItem className="text-destructive">
+                <DropdownMenuItem
+                  onClick={() => togglePublish(true)}
+                  disabled={isToggling}
+                >
                   <IconEye className="h-4 w-4" />
                   Publish
                 </DropdownMenuItem>
