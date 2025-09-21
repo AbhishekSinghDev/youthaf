@@ -8,7 +8,6 @@ import { constructFileUrl } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { formatDate } from "date-fns";
 import { Calendar, FileText } from "lucide-react";
-import Image from "next/image";
 import ErrorState from "./error-state";
 import NoteContentSkeleton from "./note-content-skeleton";
 
@@ -36,10 +35,9 @@ const NoteContent = ({ slug }: { slug: string }) => {
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Banner Section */}
       <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-muted">
-        <Image
+        <img
           src={constructFileUrl(note.thumbnailKey)}
           alt={note.title}
-          fill
           className="object-cover"
         />
       </div>
