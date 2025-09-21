@@ -22,7 +22,6 @@ import {
   GraduationCap,
   RefreshCw,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
@@ -135,10 +134,9 @@ const NoteCard = ({ note }: { note: ListNote }) => {
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
         {/* Thumbnail */}
         <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
-          <Image
+          <img
             src={constructFileUrl(note.thumbnailKey)}
             alt={note.title}
-            fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
 
