@@ -1,3 +1,4 @@
+import { CACHE_DURATION, getCacheKey, redis } from "@/lib/redis";
 import { db } from "@/server/db";
 import { note } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
@@ -12,6 +13,23 @@ export async function GET(req: Request) {
   }
 
   try {
+    // Check cache first
+    const cacheKey = getCacheKey.noteBySlug(slug);
+    const cachedData = await redis.get(cacheKey);
+
+    if (cachedData) {
+      console.log(`Cache hit for note: ${slug}`);
+      return NextResponse.json(cachedData, {
+        status: 200,
+        headers: {
+          "X-Cache": "HIT",
+        },
+      });
+    }
+
+    console.log(`Cache miss for note: ${slug}`);
+
+    // Fetch from database
     const noteData = await db.query.note.findFirst({
       where: eq(note.slug, slug),
       columns: {
@@ -38,7 +56,17 @@ export async function GET(req: Request) {
       return NextResponse.json({ message: "Note not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ note: noteData }, { status: 200 });
+    const response = { note: noteData };
+
+    // Cache the result for 1 month
+    await redis.setex(cacheKey, CACHE_DURATION, response);
+
+    return NextResponse.json(response, {
+      status: 200,
+      headers: {
+        "X-Cache": "MISS",
+      },
+    });
   } catch (error) {
     console.error("Error in GET /api/note:", error);
     return NextResponse.json(

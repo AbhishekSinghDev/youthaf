@@ -14,6 +14,8 @@ export const env = createEnv({
     AWS_ENDPOINT_URL_S3: z.string().url().nonempty(),
     AWS_ENDPOINT_URL_IAM: z.string().url().nonempty(),
     AWS_REGION: z.string().nonempty(),
+    UPSTASH_REDIS_REST_URL: z.string().url().nonempty(),
+    UPSTASH_REDIS_REST_TOKEN: z.string().nonempty(),
   },
   client: {
     NEXT_PUBLIC_BETTER_AUTH_URL: z.url().nonempty(),
@@ -31,6 +33,8 @@ export const env = createEnv({
     AWS_ENDPOINT_URL_S3: process.env.AWS_ENDPOINT_URL_S3,
     AWS_ENDPOINT_URL_IAM: process.env.AWS_ENDPOINT_URL_IAM,
     AWS_REGION: process.env.AWS_REGION,
+    UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+    UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
 
     NEXT_PUBLIC_BETTER_AUTH_URL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
     NEXT_PUBLIC_AWS_BUCKET_NAME: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,

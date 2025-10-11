@@ -1,3 +1,4 @@
+import { CACHE_DURATION, getCacheKey, redis } from "@/lib/redis";
 import { Class, Subject } from "@/lib/type";
 import { db } from "@/server/db";
 import { note } from "@/server/db/schema";
@@ -10,6 +11,26 @@ export async function GET(req: Request) {
   const subjectParam = searchParams.get("subject") as Subject | null;
 
   try {
+    // Check cache first
+    const cacheKey = getCacheKey.allNotes(
+      classParam || undefined,
+      subjectParam || undefined
+    );
+    const cachedData = await redis.get(cacheKey);
+
+    if (cachedData) {
+      console.log(`Cache hit for all notes: ${cacheKey}`);
+      return NextResponse.json(cachedData, {
+        status: 200,
+        headers: {
+          "X-Cache": "HIT",
+        },
+      });
+    }
+
+    console.log(`Cache miss for all notes: ${cacheKey}`);
+
+    // Fetch from database
     const whereConditions = [eq(note.isPublished, true)];
 
     if (classParam) {
@@ -45,7 +66,17 @@ export async function GET(req: Request) {
       },
     });
 
-    return NextResponse.json({ notes: noteData }, { status: 200 });
+    const response = { notes: noteData };
+
+    // Cache the result for 1 month
+    await redis.setex(cacheKey, CACHE_DURATION, response);
+
+    return NextResponse.json(response, {
+      status: 200,
+      headers: {
+        "X-Cache": "MISS",
+      },
+    });
   } catch (error) {
     console.error("Error in GET /api/note:", error);
     return NextResponse.json(
