@@ -28,7 +28,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
   fileName = "document.pdf",
 }) => {
   const [showAdDialog, setShowAdDialog] = useState(false);
-  const [adTimer, setAdTimer] = useState(10);
+  const [adTimer, setAdTimer] = useState(20);
   const [canDownload, setCanDownload] = useState(false);
   const [supportsPDFViewing, setSupportsPDFViewing] = useState(true);
   const isMobile = useIsMobile();
@@ -173,7 +173,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
                 </div>
               </div> */}
 
-              <GoogleAd adSlot="123456" />
+              <GoogleAd adSlot="7504029699" />
 
               {/* Timer */}
               <div className="text-center">
@@ -334,7 +334,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
               </div>
             </div> */}
 
-            <GoogleAd adSlot="123456" />
+            <GoogleAd adSlot="7504029699" />
 
             {/* Timer */}
             <div className="text-center">
