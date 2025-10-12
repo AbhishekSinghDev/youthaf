@@ -5,6 +5,7 @@ import { Poppins } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
+import { env } from "@/env";
 import { Analytics } from "@vercel/analytics/next";
 
 const poppins = Poppins({
@@ -43,7 +44,7 @@ export default function RootLayout({
         />
         <script
           async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8831936498194890"
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID}`}
           crossOrigin="anonymous"
         />
         <link rel="icon" href="/favicon.ico" />

@@ -20,6 +20,7 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_BETTER_AUTH_URL: z.url().nonempty(),
     NEXT_PUBLIC_AWS_BUCKET_NAME: z.string().nonempty(),
+    NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID: z.string().nonempty(),
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
@@ -38,5 +39,7 @@ export const env = createEnv({
 
     NEXT_PUBLIC_BETTER_AUTH_URL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
     NEXT_PUBLIC_AWS_BUCKET_NAME: process.env.NEXT_PUBLIC_AWS_BUCKET_NAME,
+    NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID:
+      process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID,
   },
 });

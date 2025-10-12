@@ -1,5 +1,6 @@
 "use client";
 
+import { env } from "@/env";
 import { useEffect, useRef } from "react";
 
 interface GoogleAdProps {
@@ -36,7 +37,7 @@ export default function GoogleAd({
       ref={adRef}
       className="adsbygoogle"
       style={style}
-      data-ad-client="ca-pub-YOUR_PUBLISHER_ID"
+      data-ad-client={env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID}
       data-ad-slot={adSlot}
       data-ad-format={adFormat}
       data-full-width-responsive={fullWidthResponsive ? "true" : "false"}

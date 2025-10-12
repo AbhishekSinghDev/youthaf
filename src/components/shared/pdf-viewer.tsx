@@ -11,6 +11,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Download, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
+import GoogleAd from "./google-ad";
 import Logo from "./logo";
 
 interface PDFViewerProps {
@@ -110,7 +111,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
         className="w-full bg-background border rounded-lg select-none"
         style={{ width, height }}
         onContextMenu={(e) => e.preventDefault()}
-        onSelectStart={(e) => e.preventDefault()}
         onDragStart={(e) => e.preventDefault()}
       >
         {/* Header */}
@@ -166,12 +166,14 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
 
             <div className="flex flex-col items-center space-y-4 py-4">
               {/* Advertisement Space */}
-              <div className="w-full h-32 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white">
+              {/* <div className="w-full h-32 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white">
                 <div className="text-center">
                   <h3 className="font-bold text-lg">Your Ad Here</h3>
                   <p className="text-sm opacity-90">Premium content awaits!</p>
                 </div>
-              </div>
+              </div> */}
+
+              <GoogleAd adSlot="123456" />
 
               {/* Timer */}
               <div className="text-center">
@@ -220,7 +222,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
       className="w-full bg-background select-none"
       style={{ width, height }}
       onContextMenu={(e) => e.preventDefault()}
-      onSelectStart={(e) => e.preventDefault()}
       onDragStart={(e) => e.preventDefault()}
     >
       {/* Minimal Toolbar */}
@@ -326,12 +327,14 @@ const PDFViewer: React.FC<PDFViewerProps> = ({
 
           <div className="flex flex-col items-center space-y-4 py-4">
             {/* Advertisement Space */}
-            <div className="w-full h-32 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white">
+            {/* <div className="w-full h-32 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white">
               <div className="text-center">
                 <h3 className="font-bold text-lg">Your Ad Here</h3>
                 <p className="text-sm opacity-90">Premium content awaits!</p>
               </div>
-            </div>
+            </div> */}
+
+            <GoogleAd adSlot="123456" />
 
             {/* Timer */}
             <div className="text-center">
