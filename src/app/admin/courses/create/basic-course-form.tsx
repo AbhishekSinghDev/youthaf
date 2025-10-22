@@ -1,3 +1,5 @@
+// @ts-ignore
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +20,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import DNDFileUploader from "@/components/dnd-file-uploader/uploader";
-import RichTextEditor from "@/components/rich-text-editor/editor";
+// import RichTextEditor from "@/components/rich-text-editor/editor";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -191,10 +193,10 @@ const BasicCourseForm = () => {
                   Course Description
                 </FormLabel>
                 <FormControl>
-                  <RichTextEditor
+                  {/* <RichTextEditor
                     value={field.value}
                     onChange={field.onChange}
-                  />
+                  /> */}
                 </FormControl>
                 <FormMessage />
               </FormItem>
