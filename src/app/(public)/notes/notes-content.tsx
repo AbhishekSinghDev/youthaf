@@ -11,10 +11,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { fetchAllNotes } from "@/lib/functions";
 import { Class, ListNote, Subject } from "@/lib/type";
 import { constructFileUrl } from "@/lib/utils";
 import { classEnum, subjectEnum } from "@/server/db/schema";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   BookOpen,
   Calendar,
@@ -25,37 +26,6 @@ import {
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
-
-const fetchAllNotes = async (
-  classParam?: string,
-  subjectParam?: string
-): Promise<{ notes: ListNote[] }> => {
-  let url = "/api/note/all";
-
-  if (classParam || subjectParam) {
-    const queryParams = new URLSearchParams();
-    if (classParam) queryParams.append("class", classParam);
-    if (subjectParam) queryParams.append("subject", subjectParam);
-    url += `?${queryParams.toString()}`;
-  }
-
-  const response = await fetch(url);
-  if (!response.ok) {
-    if (response.status === 404) {
-      throw new Error(
-        "Note not found. The requested note may have been deleted or moved."
-      );
-    }
-    if (response.status === 403) {
-      throw new Error(
-        "Access denied. You don't have permission to view this note."
-      );
-    }
-    throw new Error("Failed to load note content. Please try again later.");
-  }
-  const data = await response.json();
-  return data;
-};
 
 // Header Component
 const NotesHeader = () => (
@@ -223,30 +193,24 @@ const LoadingState = () => (
   </>
 );
 
-// Notes Grid Component
+// Notes Grid Component - simplified without loading state
 const NotesGrid = ({
   notes,
-  isLoading,
   isError,
   error,
   onRetry,
 }: {
   notes: ListNote[];
-  isLoading: boolean;
   isError: boolean;
   error: Error | null;
   onRetry: () => void;
 }) => (
   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-    {isLoading && <LoadingState />}
-
     {isError && <ErrorState error={error as Error} onRetry={onRetry} />}
 
-    {!isLoading && !isError && notes.length === 0 && <EmptyState />}
+    {!isError && notes.length === 0 && <EmptyState />}
 
-    {!isLoading &&
-      !isError &&
-      notes.map((note) => <NoteCard key={note.id} note={note} />)}
+    {!isError && notes.map((note) => <NoteCard key={note.id} note={note} />)}
   </div>
 );
 
@@ -289,7 +253,7 @@ const NotesContent = () => {
   const classParam = searchParams.get("class") as Class | undefined;
   const subjectParam = searchParams.get("subject") as Subject | undefined;
 
-  const { data, isLoading, isError, error, refetch } = useQuery({
+  const { data, isError, error, refetch } = useSuspenseQuery({
     queryKey: ["all-notes", classParam, subjectParam],
     queryFn: () => fetchAllNotes(classParam, subjectParam),
   });
@@ -317,7 +281,6 @@ const NotesContent = () => {
       />
       <NotesGrid
         notes={publishedNotes}
-        isLoading={isLoading}
         isError={isError}
         error={error}
         onRetry={() => refetch()}
@@ -328,10 +291,24 @@ const NotesContent = () => {
 
 const NotesContentSuspense = () => {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<LoadingFallback />}>
       <NotesContent />
     </Suspense>
   );
 };
+
+// Add a loading fallback component
+const LoadingFallback = () => (
+  <div className="max-w-full mx-auto lg:px-8 lg:py-4">
+    <NotesHeader />
+    <div className="flex items-center gap-3 mb-8">
+      <Skeleton className="h-10 w-[180px]" />
+      <Skeleton className="h-10 w-[180px]" />
+    </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <LoadingState />
+    </div>
+  </div>
+);
 
 export default NotesContentSuspense;

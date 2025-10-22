@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { CACHE_DURATION, getCacheKey, redis } from "@/lib/redis";
 import { Class, Subject } from "@/lib/type";
 import { db } from "@/server/db";
@@ -11,24 +12,24 @@ export async function GET(req: Request) {
   const subjectParam = searchParams.get("subject") as Subject | null;
 
   try {
-    // Check cache first
     const cacheKey = getCacheKey.allNotes(
       classParam || undefined,
       subjectParam || undefined
     );
-    const cachedData = await redis.get(cacheKey);
 
-    if (cachedData) {
-      console.log(`Cache hit for all notes: ${cacheKey}`);
-      return NextResponse.json(cachedData, {
-        status: 200,
-        headers: {
-          "X-Cache": "HIT",
-        },
-      });
+    if (env.NODE_ENV !== "development") {
+      const cachedData = await redis.get(cacheKey);
+
+      if (cachedData) {
+        console.log(`Cache hit for all notes: ${cacheKey}`);
+        return NextResponse.json(cachedData, {
+          status: 200,
+          headers: {
+            "X-Cache": "HIT",
+          },
+        });
+      }
     }
-
-    console.log(`Cache miss for all notes: ${cacheKey}`);
 
     // Fetch from database
     const whereConditions = [eq(note.isPublished, true)];
@@ -68,8 +69,12 @@ export async function GET(req: Request) {
 
     const response = { notes: noteData };
 
-    // Cache the result for 1 month
-    await redis.setex(cacheKey, CACHE_DURATION, response);
+    if (env.NODE_ENV !== "development") {
+      // Cache the response
+      await redis.set(cacheKey, response, {
+        ex: CACHE_DURATION,
+      });
+    }
 
     return NextResponse.json(response, {
       status: 200,

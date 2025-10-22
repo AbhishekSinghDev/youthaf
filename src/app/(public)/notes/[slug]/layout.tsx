@@ -1,4 +1,4 @@
-import { fetchNoteContent } from "@/lib/functions";
+import { fetchNoteContentServer } from "@/lib/functions";
 import { constructFileUrl } from "@/lib/utils";
 import { Metadata } from "next";
 import React from "react";
@@ -11,7 +11,7 @@ export async function generateMetadata({
   const slug = (await params).slug;
 
   try {
-    const data = await fetchNoteContent(slug);
+    const data = await fetchNoteContentServer(slug);
     const note = data.note;
 
     if (!note) {
@@ -39,8 +39,8 @@ export async function generateMetadata({
         url: canonicalUrl,
         siteName: "Skillex",
         type: "article",
-        publishedTime: new Date(note.createdAt).toLocaleDateString(),
-        modifiedTime: new Date(note.updatedAt).toLocaleDateString(),
+        publishedTime: new Date(note.createdAt).toISOString(),
+        modifiedTime: new Date(note.updatedAt).toISOString(),
         images: coverImage
           ? [
               {

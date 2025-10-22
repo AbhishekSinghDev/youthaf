@@ -5,25 +5,23 @@ import PDFViewer from "@/components/shared/pdf-viewer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { fetchNoteContent } from "@/lib/functions";
 import { constructFileUrl } from "@/lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { formatDate } from "date-fns";
 import { Calendar, FileText } from "lucide-react";
-import ErrorState from "./error-state";
+import { Suspense } from "react";
 import NoteContentSkeleton from "./note-content-skeleton";
 
-const NoteContent = ({ slug }: { slug: string }) => {
-  const { data, error, isLoading } = useQuery({
+const NoteContentInner = ({ slug }: { slug: string }) => {
+  const { data } = useSuspenseQuery({
     queryKey: ["noteContent", slug],
     queryFn: () => fetchNoteContent(slug),
-    retry: 1,
   });
 
   const isMobile = useIsMobile();
 
-  if (isLoading) return <NoteContentSkeleton />;
-  if (error) return <ErrorState message={error.message} />;
-  if (!data?.note)
-    return <ErrorState message="Note content is not available." />;
+  if (!data?.note) {
+    return <div>Note content is not available.</div>;
+  }
 
   const { note } = data;
   const pdfAttachments =
@@ -41,6 +39,7 @@ const NoteContent = ({ slug }: { slug: string }) => {
           className="object-cover"
         />
       </div>
+
       {/* Header Section */}
       <header className="space-y-4 border-b pb-6">
         <div className="space-y-2">
@@ -63,18 +62,6 @@ const NoteContent = ({ slug }: { slug: string }) => {
       {/* Content Section */}
       <section className="space-y-6">
         <div className="prose-container">
-          {/* {note.content ? (
-            <RichTextRenderer
-              content={note.content}
-              className="prose-lg max-w-none"
-            />
-          ) : (
-            <div className="text-center py-12 text-muted-foreground">
-              <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No content available for this note.</p>
-            </div>
-          )} */}
-
           <Preview editorSerializedState={JSON.parse(note.content)} />
         </div>
       </section>
@@ -91,7 +78,7 @@ const NoteContent = ({ slug }: { slug: string }) => {
 
           {pdfAttachments.length > 0 ? (
             <div className="space-y-6">
-              {pdfAttachments.map((attachment, index) => (
+              {pdfAttachments.map((attachment) => (
                 <div key={attachment.id} className="space-y-4">
                   <PDFViewer
                     pdfUrl={constructFileUrl(attachment.fileKey)}
@@ -115,6 +102,14 @@ const NoteContent = ({ slug }: { slug: string }) => {
         </section>
       )}
     </div>
+  );
+};
+
+const NoteContent = ({ slug }: { slug: string }) => {
+  return (
+    <Suspense fallback={<NoteContentSkeleton />}>
+      <NoteContentInner slug={slug} />
+    </Suspense>
   );
 };
 

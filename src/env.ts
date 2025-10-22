@@ -3,6 +3,7 @@ import { z } from "zod";
 
 export const env = createEnv({
   server: {
+    NODE_ENV: z.enum(["development", "production"]).default("development"),
     DATABASE_URL: z.url().nonempty(),
     BETTER_AUTH_SECRET: z.string().nonempty(),
     GITHUB_CLIENT_ID: z.string().nonempty(),
@@ -23,6 +24,7 @@ export const env = createEnv({
     NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID: z.string().nonempty(),
   },
   runtimeEnv: {
+    NODE_ENV: process.env.NODE_ENV,
     DATABASE_URL: process.env.DATABASE_URL,
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,

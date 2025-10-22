@@ -1,12 +1,9 @@
-import QueryProvider from "@/components/providers/query-provider";
-import { ThemeProvider } from "@/components/providers/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
 import { Poppins } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
 import { env } from "@/env";
-import { Analytics } from "@vercel/analytics/next";
+import { Providers } from "../components/providers/providers";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -53,16 +50,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className={poppins.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <QueryProvider>{children}</QueryProvider>
-          <Toaster richColors />
-        </ThemeProvider>
-        <Analytics />
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
