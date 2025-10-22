@@ -1,34 +1,17 @@
 "use client";
 
 import { IconBrandYoutube } from "@tabler/icons-react";
-import { motion } from "framer-motion";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 export default function Hero() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
   return (
     <>
       <section className="relative overflow-hidden min-h-[50vh] flex flex-col z-10">
         <div className="container mx-auto px-4 pt-12 pb-8 relative z-10 flex-1 flex flex-col">
           <div className="text-center flex-1 flex flex-col items-center justify-center">
             {/* Main Heading */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="mb-8 flex items-center gap-3"
-            >
+            <div className="mb-8 flex items-center gap-3">
               <IconBrandYoutube className="size-11 lg:size-18 text-red-500" />
               <h1
                 id="main-title"
@@ -36,24 +19,14 @@ export default function Hero() {
               >
                 Youth AF
               </h1>
-            </motion.div>
+            </div>
 
             {/* Description */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground"
-            >
+            <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
               No fluff. No overcomplications. Just solid CS learning.
-            </motion.p>
+            </p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-col items-center gap-6"
-            >
+            <div className="flex flex-col items-center gap-6">
               {/* Get started button */}
               <div className="flex items-center justify-center">
                 <Link href="#start">
@@ -84,7 +57,7 @@ export default function Hero() {
                   </div>
                 </Link>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
