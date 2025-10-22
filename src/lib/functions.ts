@@ -111,3 +111,97 @@ export const fetchAllNotes = async (
 
   return response.json();
 };
+
+// Admin Stats Types
+export type AdminStats = {
+  stats: {
+    totalUsers: number;
+    totalCourses: number;
+    publishedCourses: number;
+    totalNotes: number;
+    publishedNotes: number;
+    totalViews: number;
+  };
+  recentUsers: Array<{
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    createdAt: Date;
+  }>;
+  recentNotes: Array<{
+    id: string;
+    title: string;
+    class: string;
+    subject: string;
+    views: string;
+    isPublished: boolean;
+    createdAt: Date;
+  }>;
+  notesByClass: Array<{
+    class: string;
+    count: number;
+  }>;
+  notesBySubject: Array<{
+    subject: string;
+    count: number;
+  }>;
+};
+
+// Server-side fetch for admin stats
+export const fetchAdminStatsServer = async (): Promise<AdminStats> => {
+  const url = `${getBaseUrl()}/api/admin/stats`;
+
+  const response = await fetch(url, {
+    next: { revalidate: 60 }, // 1 minute cache
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to load admin statistics");
+  }
+
+  return response.json();
+};
+
+// Client-side fetch for admin stats
+export const fetchAdminStats = async (): Promise<AdminStats> => {
+  const url = "/api/admin/stats";
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error("Failed to load admin statistics");
+  }
+
+  return response.json();
+};
+
+// Server-side fetch for admin notes
+export const fetchAdminNotesServer = async (): Promise<{
+  notes: ListNote[];
+}> => {
+  const url = `${getBaseUrl()}/api/admin/note`;
+
+  const response = await fetch(url, {
+    next: { revalidate: 60 }, // 1 minute cache
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to load notes");
+  }
+
+  return response.json();
+};
+
+// Client-side fetch for admin notes
+export const fetchAdminNotes = async (): Promise<{ notes: ListNote[] }> => {
+  const url = "/api/admin/note";
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error("Failed to load notes");
+  }
+
+  return response.json();
+};

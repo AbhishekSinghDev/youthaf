@@ -1,17 +1,19 @@
-import { ChartAreaInteractive } from "@/components/shared/chart-area-interactive";
-import { DataTable } from "@/components/shared/data-table";
-import { SectionCards } from "@/components/shared/section-cards";
+import { fetchAdminStatsServer } from "@/lib/functions";
+import { getQueryClient } from "@/lib/query-client";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import DashboardContent from "./dashboard-content";
 
-import data from "./data.json";
+export default async function Page() {
+  const queryClient = getQueryClient();
 
-export default function Page() {
+  await queryClient.prefetchQuery({
+    queryKey: ["admin-stats"],
+    queryFn: fetchAdminStatsServer,
+  });
+
   return (
-    <>
-      <SectionCards />
-      <div className="px-4 lg:px-6">
-        <ChartAreaInteractive />
-      </div>
-      <DataTable data={data} />
-    </>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <DashboardContent />
+    </HydrationBoundary>
   );
 }

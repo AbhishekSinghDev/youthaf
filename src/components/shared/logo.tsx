@@ -22,18 +22,17 @@ const Logo = ({
   iconClassName,
   textClassName,
   brandName = "YouthAF",
-  iconSize = 24,
 }: LogoProps) => {
   const { theme } = useTheme();
 
   return (
     <Link href={href} className={cn("flex items-center gap-2", className)}>
-      <div className="relative aspect-square size-8 overflow-hidden rounded-full">
+      <div className="relative aspect-square size-8 overflow-hidden rounded-full shrink-0">
         <Image
           src={theme === "dark" ? "/youthaf-2.png" : "/youthaf-1.png"}
           alt={brandName}
           fill
-          className={cn("flex-shrink-0", iconClassName)}
+          className={cn("flex-shrink-0 shrink-0", iconClassName)}
         />
       </div>
       {showBrandName && (

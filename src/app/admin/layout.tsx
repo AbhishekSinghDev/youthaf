@@ -23,7 +23,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="inset" />
+      <AppSidebar />
       <SidebarInset>
         <SiteHeader />
         <div className="flex flex-1 flex-col">
