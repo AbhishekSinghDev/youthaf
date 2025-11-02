@@ -128,6 +128,7 @@ export const subjectEnum = pgEnum("subject_enum", [
   "computer_applications",
   "data_science",
   "web_applications",
+  "employability_skills",
 ]);
 
 export const course = pgTable("course", {

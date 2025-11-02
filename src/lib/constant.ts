@@ -84,6 +84,12 @@ export const subjects = [
     description:
       "Introduction to data analysis, visualization, and machine learning concepts.",
   },
+  {
+    name: "Employability Skills",
+    slug: "employability-skills",
+    description:
+      "Essential skills for career readiness and workplace effectiveness.",
+  },
 ] as const;
 
 export const resourceTypes = [
@@ -188,6 +194,15 @@ export const classesData = {
         "recommended-books": "https://t.me/YouthAf",
         "previous-year-papers": "https://t.me/YouthAf",
       },
+      "employability-skills": {
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/Curriculum26/Sec/EmployabilitySkills_IX.pdf",
+        "ncert-books":
+          "https://cbseacademic.nic.in/web_material/Curriculum21/publication/secondary/Employability_Skills_IX.pdf",
+        notes: "/notes?class=class_9&subject=employability_skills",
+        "recommended-books": "https://t.me/YouthAf",
+        "previous-year-papers": "https://t.me/YouthAf",
+      },
     },
   },
   "class-10": {
@@ -249,6 +264,15 @@ export const classesData = {
         "ncert-books":
           "https://cbseacademic.nic.in/web_material/codeingDS/classX_DS_Student_Handbook.pdf",
         notes: "/notes?class=class_10&subject=data_science",
+        "recommended-books": "https://t.me/YouthAf",
+        "previous-year-papers": "https://t.me/YouthAf",
+      },
+      "employability-skills": {
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/Curriculum26/sec/EmployabilitySkills_X.pdf",
+        "ncert-books":
+          "https://cbseacademic.nic.in/web_material/Curriculum21/publication/secondary/Employability_Skills10.pdf",
+        notes: "/notes?class=class_10&subject=employability_skills",
         "recommended-books": "https://t.me/YouthAf",
         "previous-year-papers": "https://t.me/YouthAf",
       },
@@ -321,6 +345,15 @@ export const classesData = {
         "recommended-books": "https://t.me/YouthAf",
         "previous-year-papers": "https://t.me/YouthAf",
       },
+      "employability-skills": {
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/Curriculum26/SrSec/EmployabilitySkills_XI.pdf",
+        "ncert-books":
+          "https://cbseacademic.nic.in/web_material/Curriculum21/publication/srsec/Employability_Skills_XI.pdf",
+        notes: "/notes?class=class_11&subject=employability_skills",
+        "recommended-books": "https://t.me/YouthAf",
+        "previous-year-papers": "https://t.me/YouthAf",
+      },
     },
   },
   "class-12": {
@@ -390,6 +423,15 @@ export const classesData = {
         "ncert-books":
           "https://cbseacademic.nic.in/web_material/codeingDS/classXII_DS_Student_Handbook.pdf",
         notes: "/notes?class=class_12&subject=data_science",
+        "recommended-books": "https://t.me/YouthAf",
+        "previous-year-papers": "https://t.me/YouthAf",
+      },
+      "employability-skills": {
+        syllabus:
+          "https://cbseacademic.nic.in/web_material/Curriculum26/SrSec/EmployabilitySkills_XII.pdf",
+        "ncert-books":
+          "https://cbseacademic.nic.in/web_material/Curriculum21/publication/srsec/Employability_Skills_XII.pdf",
+        notes: "/notes?class=class_12&subject=employability_skills",
         "recommended-books": "https://t.me/YouthAf",
         "previous-year-papers": "https://t.me/YouthAf",
       },
