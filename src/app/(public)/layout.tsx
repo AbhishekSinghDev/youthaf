@@ -74,7 +74,12 @@ export const metadata: Metadata = {
 
 const PublicRoutesLayout = ({ children }: PublicRoutesLayoutProps) => {
   return (
-    <main className="min-h-screen dark:bg-[#111111]">
+    <main className="relative min-h-screen">
+      {/* Grid Pattern Background */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute inset-0 bg-background bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] dark:bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)]"></div>
+      </div>
+
       <TopNav />
       <Header />
       <div className="pt-4 max-w-2xl mx-auto px-4">{children}</div>

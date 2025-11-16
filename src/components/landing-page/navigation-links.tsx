@@ -55,40 +55,6 @@ export default function NavigationLinks({
 
   return (
     <div className={isMobile ? "flex flex-col space-y-1 w-full" : "contents"}>
-      {/* About US */}
-      {/* <Link
-        href="/about-us"
-        className={`${buttonVariants({ variant: "ghost" })} ${linkClass}`}
-        onClick={onLinkClick}
-      >
-        <IconBook2 className="h-4 w-4" />
-        About
-      </Link> */}
-
-      {/* YouTube Link */}
-      {/* <Link
-        href="https://www.youtube.com/@YouthAf"
-        target="_blank"
-        rel="noopener"
-        className={`${buttonVariants({ variant: "ghost" })} ${linkClass}`}
-        onClick={onLinkClick}
-      >
-        <IconBrandYoutube className="mr-2 h-4 w-4" />
-        Youtube
-      </Link> */}
-
-      {/* Telegram Link */}
-      {/* <Link
-        href="https://t.me/YouthAf"
-        target="_blank"
-        rel="noopener"
-        className={`${buttonVariants({ variant: "ghost" })} ${linkClass}`}
-        onClick={onLinkClick}
-      >
-        <IconBrandTelegram className="mr-2 h-4 w-4" />
-        Telegram
-      </Link> */}
-
       {/* Browse Section - Mobile vs Desktop */}
       {isMobile ? (
         <div className="w-full">
@@ -198,24 +164,31 @@ export default function NavigationLinks({
         <div className="flex items-center">
           <DropdownMenu>
             <DropdownMenuTrigger
-              className={buttonVariants({
-                variant: "ghost",
-                size: "sm",
-              })}
+              className={cn(
+                buttonVariants({
+                  variant: "ghost",
+                  size: "sm",
+                }),
+                "gap-1"
+              )}
             >
-              Select Class <ChevronDown className="h-4 w-4" />
+              Select Class <ChevronDown className="h-3.5 w-3.5" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Select Your Class</DropdownMenuLabel>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel className="text-xs text-muted-foreground font-medium">
+                Choose Your Class
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               {navigationMenuData.classes.items.map((classItem) => (
-                <DropdownMenuItem key={classItem.href}>
+                <DropdownMenuItem key={classItem.href} className="p-0">
                   <Link
                     href={`/class/${classItem.href}`}
-                    className="block p-3 rounded-lg"
+                    className="w-full px-2 py-2.5 block rounded transition-colors"
                   >
                     <div className="text-sm font-medium">{classItem.title}</div>
-                    <div className="text-xs mt-1">{classItem.description}</div>
+                    <div className="text-xs text-muted-foreground mt-0.5">
+                      {classItem.description}
+                    </div>
                   </Link>
                 </DropdownMenuItem>
               ))}
@@ -226,10 +199,10 @@ export default function NavigationLinks({
               <Button
                 variant="ghost"
                 size="sm"
-                className={cn(linkClass, "cursor-pointer")}
+                className={cn(linkClass, "cursor-pointer gap-1")}
               >
-                <IconWorld className="h-4 w-4" />
                 Explore
+                <ChevronDown className="h-3.5 w-3.5" />
               </Button>
             }
           />
@@ -242,26 +215,20 @@ export default function NavigationLinks({
           className={
             isMobile
               ? "flex flex-col gap-2 mt-4 pt-4 border-t"
-              : "flex items-center gap-3"
+              : "flex items-center gap-2"
           }
         >
           <Button
-            variant="outline"
+            variant="default"
             asChild
             size="sm"
-            className={isMobile ? "w-full" : ""}
+            className={cn(isMobile ? "w-full" : "", "font-medium")}
           >
             <Link href="/login" onClick={onLinkClick}>
               <IconLogin className="h-4 w-4" />
               Login
             </Link>
           </Button>
-          {/* <Button asChild className={isMobile ? "w-full" : ""}>
-            <Link href="/signup" onClick={onLinkClick}>
-              <IconPlayerPlay className="mr-2 h-4 w-4" />
-              Get Started
-            </Link>
-          </Button> */}
         </div>
       )}
     </div>

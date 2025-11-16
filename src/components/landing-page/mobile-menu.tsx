@@ -31,22 +31,20 @@ export default function MobileMenu({
   };
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2">
       {isAuthenticated && (
-        <Button size="icon" variant="ghost" className="md:hidden" asChild>
-          <div className="md:hidden">
-            <UserDropdown />
-          </div>
-        </Button>
+        <div className="md:hidden">
+          <UserDropdown />
+        </div>
       )}
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button
             size="icon"
-            variant="outline"
+            variant="ghost"
             className="md:hidden rounded-full"
           >
-            <Menu className="h-4 w-4 text-black dark:text-white" />
+            <Menu className="h-5 w-5" />
           </Button>
         </SheetTrigger>
         <SheetContent
@@ -55,20 +53,20 @@ export default function MobileMenu({
           className="w-[85%] max-w-sm p-0 flex flex-col"
         >
           <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
-          <SheetHeader className="p-4 border-b flex flex-row items-center justify-between">
+          <SheetHeader className="p-5 border-b flex flex-row items-center justify-between">
             <Logo showBrandName />
-            <div className="flex items-center">
+            <div className="flex items-center gap-1">
               <ThemeToggle />
               <SheetClose asChild>
                 <Button size="icon" variant="ghost" className="rounded-full">
-                  <IconX className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                  <IconX className="h-5 w-5" />
                 </Button>
               </SheetClose>
             </div>
           </SheetHeader>
 
-          <div className="flex-1 flex flex-col">
-            <nav className="flex-1 p-4">
+          <div className="flex-1 flex flex-col overflow-y-auto">
+            <nav className="flex-1 p-5">
               <NavigationLinks
                 isMobile={true}
                 isAuthenticated={isAuthenticated}

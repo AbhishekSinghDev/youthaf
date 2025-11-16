@@ -1,108 +1,111 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { classesData } from "@/lib/constant";
-import { ArrowRight, GraduationCap } from "lucide-react";
+import { ArrowRight, BookOpen, GraduationCap } from "lucide-react";
 import Link from "next/link";
 
 const SelectClassSection = () => {
   return (
-    <section id="start" className="py-10 z-10">
-      {/* Header Section */}
-      <div className="text-center mb-16">
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <div className="p-3 rounded-2xl bg-gradient-to-br from-primary to-primary shadow-lg">
-            <GraduationCap className="w-5 h-5 md:w-7 md:h-7 text-white" />
+    <section id="start" className="py-20 md:py-24 z-10">
+      <div className="mx-auto px-6 md:px-12 lg:px-16 xl:px-24 max-w-[1400px]">
+        {/* Header Section */}
+        <div className="text-center mb-16 space-y-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+            <GraduationCap className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-primary">
+              Choose Your Path
+            </span>
           </div>
-          <h2 className="text-2xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-            Select Your Class
-          </h2>
+
+          <h2 className="text-3xl md:text-5xl font-bold">Select Your Class</h2>
+
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Access tailored study materials, practice tests, and resources
+            designed for your grade level
+          </p>
         </div>
-        <p className="text-sm md:text-lg text-muted-foreground font-medium max-w-3xl mx-auto leading-relaxed">
-          Choose your academic level to access personalized study materials,
-          practice tests, and expert guidance tailored to your curriculum
-        </p>
-      </div>
 
-      {/* Classes Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        {Object.entries(classesData).map(([key, classInfo]) => (
-          <Link key={key} href={`/class/${classInfo.slug}`}>
-            <Card
-              key={key}
-              className="group cursor-pointer transition-all duration-500 ease-out hover:scale-[1.02] hover:shadow-2xl hover:-translate-y-2 border-2 hover:border-[#7A7FEE]/50 overflow-hidden relative backdrop-blur-sm"
-            >
-              {/* Gradient overlay on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/5 transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
+        {/* Classes Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          {Object.entries(classesData).map(([key, classInfo], index) => {
+            const colors = [
+              "from-blue-500 to-cyan-500",
+              "from-purple-500 to-pink-500",
+              "from-orange-500 to-red-500",
+              "from-green-500 to-emerald-500",
+            ];
+            const bgColors = [
+              "bg-blue-500/5",
+              "bg-purple-500/5",
+              "bg-orange-500/5",
+              "bg-green-500/5",
+            ];
+            const borderColors = [
+              "border-blue-500/20",
+              "border-purple-500/20",
+              "border-orange-500/20",
+              "border-green-500/20",
+            ];
 
-              <CardHeader className="pb-6 relative z-10">
-                <div className="flex items-center justify-between mb-4">
-                  {/* <div className="p-4 rounded-xl transition-all duration-500 bg-gradient-to-br from-primary/15 to-primary/15 group-hover:from-primary group-hover:to-primary group-hover:scale-105 group-hover:shadow-lg">
-                  <BookOpen className="w-7 h-7 transition-all duration-500 text-primary group-hover:text-white group-hover:scale-110" />
-                </div> */}
-                  {/* <div className="text-right">
-                  <div className="text-sm font-medium text-muted-foreground">
-                    {classInfo.subjects.length} Subjects
-                  </div>
-                </div> */}
-                </div>
-
-                <CardTitle className="text-2xl text-center font-bold group-hover:text-primary transition-colors duration-500">
-                  {classInfo.title}
-                </CardTitle>
-
-                {/* <CardDescription className="text-base leading-relaxed">
-                Comprehensive study materials for{" "}
-                {classInfo.title.toLowerCase()} students
-              </CardDescription> */}
-              </CardHeader>
-
-              <CardContent className="pt-0 relative z-10">
-                {/* Subjects Preview */}
-                {/* <div className="mb-6">
-                <div className="text-sm font-semibold text-muted-foreground mb-3">
-                  Available Subjects:
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {classInfo.subjects.slice(0, 2).map((subject, index) => (
-                    <span
-                      key={index}
-                      className="text-xs px-3 py-1.5 rounded-full bg-muted/80 text-muted-foreground font-medium border"
+            return (
+              <Link key={key} href={`/class/${classInfo.slug}`}>
+                <div
+                  className={`group relative p-6 rounded-2xl border ${borderColors[index]} ${bgColors[index]} transition-all duration-300 hover:shadow-xl hover:-translate-y-2`}
+                >
+                  {/* Icon */}
+                  <div className="mb-6">
+                    <div
+                      className={`inline-flex p-4 rounded-xl bg-gradient-to-br ${colors[index]} shadow-lg transition-transform duration-300 group-hover:scale-110`}
                     >
-                      {subject.name}
-                    </span>
-                  ))}
-                  {classInfo.subjects.length > 2 && (
-                    <span className="text-xs px-3 py-1.5 rounded-full bg-[#7A7FEE]/10 text-[#7A7FEE] font-medium border border-[#7A7FEE]/20">
-                      +{classInfo.subjects.length - 2} more
-                    </span>
-                  )}
-                </div>
-              </div> */}
+                      <BookOpen className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
 
-                {/* Select Button */}
-                <div className="w-full py-4 px-6 rounded-xl font-semibold text-base transition-all duration-500 ease-out flex items-center justify-center gap-3 bg-muted/60 hover:bg-muted text-foreground border-2 border-transparent hover:border-primary/20 group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-primary group-hover:text-white group-hover:shadow-xl group-hover:shadow-primary/30 group-hover:scale-105 group-hover:shadow-lg transform-gpu">
-                  <span>Select Class</span>
-                  <ArrowRight className="w-5 h-5 transition-all duration-500 group-hover:translate-x-2 group-hover:scale-110" />
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
-      </div>
+                  {/* Content */}
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-2xl font-bold mb-2">
+                        {classInfo.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {classInfo.subjects.length} subjects available
+                      </p>
+                    </div>
 
-      {/* Additional Info */}
-      <div className="mt-16 text-center">
-        <div className="p-8 rounded-2xl bg-gradient-to-r from-muted/30 to-muted/50 border border-border/50">
-          <div className="space-y-4">
-            <h3 className="text-xl font-bold text-foreground">
-              🚀 Everything You Need to Ace Your Exams!
-            </h3>
-            <p className="text-base text-muted-foreground leading-relaxed">
-              Get cool study notes, practice tests, and exam papers for your
-              class. Pick your grade and start learning in a fun way that
-              actually works!
-            </p>
-            <div className="flex items-center justify-center gap-2 text-sm text-primary font-medium">
-              <span>✨ Made by students, for students</span>
+                    {/* CTA */}
+                    <div className="flex items-center gap-2 text-sm font-medium text-foreground group-hover:text-primary transition-colors duration-300">
+                      <span>Get Started</span>
+                      <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    </div>
+                  </div>
+
+                  {/* Hover gradient overlay */}
+                  <div
+                    className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${colors[index]} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}
+                  />
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Bottom CTA Card */}
+        <div className="max-w-5xl mx-auto">
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-muted/50 to-muted/30 p-10 md:p-12">
+            {/* Background decoration */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10" />
+
+            <div className="text-center space-y-4">
+              <div className="text-4xl">🎯</div>
+              <h3 className="text-2xl md:text-3xl font-bold">
+                Everything You Need to Excel
+              </h3>
+              <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                Comprehensive notes, practice questions, and exam papers crafted
+                by students who've been exactly where you are
+              </p>
+              <div className="flex items-center justify-center gap-2 text-sm text-primary font-medium pt-2">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span>Made by students, for students</span>
+              </div>
             </div>
           </div>
         </div>

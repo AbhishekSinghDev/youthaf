@@ -14,16 +14,18 @@ export default async function Header() {
   const isAuthenticated = !!session?.user;
 
   return (
-    <header className="sticky top-0 z-40 w-full transition-all duration-200 backdrop-blur-xs bg-white dark:bg-transparent">
-      <div className="py-4 max-w-2xl mx-auto px-4">
-        <div className="flex items-center justify-between">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+      <div className="mx-auto px-6 md:px-12 lg:px-16 xl:px-24 max-w-[1400px]">
+        <div className="flex h-16 items-center justify-between">
           <Logo showBrandName />
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {/* Desktop Navigation - Hidden on mobile */}
             <div className="hidden md:flex items-center gap-2">
               <NavigationLinks isAuthenticated={isAuthenticated} />
-              <ThemeToggle />
+              <div className="ml-2">
+                <ThemeToggle />
+              </div>
               {isAuthenticated && <UserDropdown />}
             </div>
 

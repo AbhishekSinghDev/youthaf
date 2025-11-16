@@ -1,66 +1,93 @@
 "use client";
 
 import { IconBrandYoutube } from "@tabler/icons-react";
-import { BookOpen } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 export default function Hero() {
   return (
-    <>
-      <section className="relative overflow-hidden min-h-[50vh] flex flex-col z-10">
-        <div className="container mx-auto px-4 pt-12 pb-8 relative z-10 flex-1 flex flex-col">
-          <div className="text-center flex-1 flex flex-col items-center justify-center">
-            {/* Main Heading */}
-            <div className="mb-8 flex items-center gap-3">
-              <IconBrandYoutube className="size-11 lg:size-18 text-red-500" />
-              <h1
-                id="main-title"
-                className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl"
-              >
+    <section className="relative overflow-hidden py-20 md:py-32 z-10">
+      <div className="mx-auto px-6 md:px-12 lg:px-16 xl:px-24 max-w-[1400px]">
+        <div className="max-w-5xl mx-auto text-center space-y-8">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted border border-border">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium">
+              Your Ultimate Study Companion
+            </span>
+          </div>
+
+          {/* Main Heading with YouTube Icon */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-center gap-3 md:gap-4">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-red-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300" />
+                <IconBrandYoutube className="relative w-10 h-10 md:w-16 md:h-16 text-red-500 transition-transform duration-300 group-hover:scale-110" />
+              </div>
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
                 Youth AF
               </h1>
             </div>
 
-            {/* Description */}
-            <p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
-              No fluff. No overcomplications. Just solid CS learning.
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Master Computer Science with{" "}
+              <span className="text-foreground font-semibold">
+                clear explanations
+              </span>
+              ,{" "}
+              <span className="text-foreground font-semibold">
+                practical examples
+              </span>
+              , and{" "}
+              <span className="text-foreground font-semibold">
+                zero confusion
+              </span>
             </p>
+          </div>
 
-            <div className="flex flex-col items-center gap-6">
-              {/* Get started button */}
-              <div className="flex items-center justify-center">
-                <Link href="#start">
-                  <div className="group cursor-pointer border border-border bg-card gap-2 h-[60px] flex items-center p-[10px] rounded-full">
-                    <div className="border border-border bg-primary h-[40px] rounded-full flex items-center justify-center text-primary-foreground">
-                      <p className="font-medium tracking-tight mr-3 ml-3 flex items-center gap-2 justify-center text-base">
-                        <BookOpen className="w-[18px] h-[18px]" />
-                        Start Learning
-                      </p>
-                    </div>
-                    <div className="text-muted-foreground group-hover:ml-4 ease-in-out transition-all size-[24px] flex items-center justify-center rounded-full border-2 border-border">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="lucide lucide-arrow-right group-hover:rotate-180 ease-in-out transition-all"
-                      >
-                        <path d="M5 12h14"></path>
-                        <path d="m12 5 7 7-7 7"></path>
-                      </svg>
-                    </div>
-                  </div>
-                </Link>
-              </div>
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+            <Link href="#start" className="w-full sm:w-auto">
+              <button className="group relative w-full sm:w-auto px-8 py-4 bg-primary text-primary-foreground rounded-xl font-semibold text-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5">
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  Start Learning Now
+                  <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </button>
+            </Link>
+
+            <Link
+              href="https://www.youtube.com/@YouthAF"
+              target="_blank"
+              className="w-full sm:w-auto"
+            >
+              <button className="group w-full sm:w-auto px-8 py-4 bg-background border-2 border-border rounded-xl font-semibold text-lg transition-all duration-300 hover:border-primary/50 hover:bg-muted/50 hover:-translate-y-0.5">
+                <span className="flex items-center justify-center gap-2">
+                  <IconBrandYoutube className="w-5 h-5 text-red-500" />
+                  Watch on YouTube
+                </span>
+              </button>
+            </Link>
+          </div>
+
+          {/* Trust indicators */}
+          <div className="flex flex-wrap items-center justify-center gap-6 pt-8 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-green-500" />
+              <span>Free Forever</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-blue-500" />
+              <span>50,000+ Students</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-purple-500" />
+              <span>Updated Weekly</span>
             </div>
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }
