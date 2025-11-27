@@ -1,3 +1,4 @@
+import { invalidateNoteCacheOnChange } from "@/lib/cache-invalidation";
 import { NoteCreationSchema } from "@/lib/zod-schema";
 import { db } from "@/server/db";
 import { note, noteAttachments } from "@/server/db/schema";
@@ -46,6 +47,9 @@ export async function POST(req: Request) {
         }))
       );
     }
+
+    // Invalidate cache
+    await invalidateNoteCacheOnChange(data.slug);
 
     return NextResponse.json(
       { message: "Note created successfully", status: "success" },

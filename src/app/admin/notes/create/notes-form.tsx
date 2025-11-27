@@ -8,9 +8,9 @@ import {
   Loader2,
   Paperclip,
   Type,
+  X,
 } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { useForm, useWatch } from "react-hook-form";
 
 import DNDFileUploader from "@/components/dnd-file-uploader/uploader";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,7 @@ import { Input } from "@/components/ui/input";
 import { generateSlug } from "@/lib/utils";
 import { NoteCreationSchema } from "@/lib/zod-schema";
 import { IconImageInPicture, IconSparkles } from "@tabler/icons-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -41,10 +41,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { classEnum, subjectEnum } from "@/server/db/schema";
+import { useCallback, useState } from "react";
+import z4 from "zod/v4";
+
+type AttachmentItem = {
+  fileName: string;
+  fileKey: string;
+  fileSize: number;
+};
+
+type NoteFormValues = z4.input<typeof NoteCreationSchema>;
 
 const NotesForm = () => {
   const router = useRouter();
-  const form = useForm<z.infer<typeof NoteCreationSchema>>({
+  const queryClient = useQueryClient();
+  const [attachments, setAttachments] = useState<AttachmentItem[]>([]);
+
+  const form = useForm<NoteFormValues>({
     resolver: zodResolver(NoteCreationSchema),
     defaultValues: {
       title: "",
@@ -58,7 +71,7 @@ const NotesForm = () => {
                   format: 0,
                   mode: "normal",
                   style: "",
-                  text: "Hello World 🚀",
+                  text: "",
                   type: "text",
                   version: 1,
                 },
@@ -85,7 +98,7 @@ const NotesForm = () => {
 
   const { mutate: createNote, isPending: isCreatingNote } = useMutation({
     mutationKey: ["create-note"],
-    mutationFn: async (data: z.infer<typeof NoteCreationSchema>) => {
+    mutationFn: async (data: NoteFormValues) => {
       const response = await fetch("/api/admin/note/create", {
         method: "POST",
         body: JSON.stringify(data),
@@ -97,153 +110,168 @@ const NotesForm = () => {
 
       return response.json();
     },
+    onSuccess: () => {
+      toast.success("Note created successfully!");
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      router.push("/admin/notes");
+    },
+    onError: () => {
+      toast.error("Failed to create note");
+    },
   });
 
-  const onSubmit = (values: z.infer<typeof NoteCreationSchema>) => {
-    createNote(values, {
-      onSuccess: () => {
-        toast.success("Note created successfully!");
-        router.push("/admin/notes");
-      },
-      onError: () => {
-        toast.error("Failed to create note");
-      },
-    });
+  const onSubmit = (values: NoteFormValues) => {
+    createNote(values);
   };
 
-  const handleAttachmentAdd = (
-    fileKey: string,
-    fileName: string,
-    fileSize: number
-  ) => {
-    const currentAttachments = form.getValues("attachments") || [];
-    const newAttachment = {
-      fileName,
-      fileKey,
-      fileSize,
-    };
-    form.setValue("attachments", [...currentAttachments, newAttachment]);
-  };
+  const handleAttachmentAdd = useCallback(
+    (fileKey: string, fileName: string, fileSize: number) => {
+      const newAttachment: AttachmentItem = {
+        fileName,
+        fileKey,
+        fileSize,
+      };
+
+      setAttachments((prev) => [...prev, newAttachment]);
+
+      const currentAttachments = form.getValues("attachments") || [];
+      form.setValue("attachments", [
+        ...currentAttachments,
+        { fileName, fileKey, fileSize },
+      ]);
+    },
+    [form]
+  );
+
+  const handleRemoveAttachment = useCallback(
+    (fileKey: string) => {
+      setAttachments((prev) => prev.filter((att) => att.fileKey !== fileKey));
+
+      const currentAttachments = form.getValues("attachments") || [];
+      form.setValue(
+        "attachments",
+        currentAttachments.filter((att) => att.fileKey !== fileKey)
+      );
+    },
+    [form]
+  );
+
+  // Watch for title changes to enable auto-slug generation
+  const title = useWatch({ control: form.control, name: "title" });
 
   return (
-    <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Title Field */}
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                  <Type className="w-4 h-4" />
-                  Note Title
-                </FormLabel>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Title Field */}
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                <Type className="w-4 h-4" />
+                Note Title
+              </FormLabel>
+              <FormControl>
+                <Input placeholder="Enter note title" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Slug Field */}
+        <FormField
+          control={form.control}
+          name="slug"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                <Link className="w-4 h-4" />
+                URL Slug
+              </FormLabel>
+              <div className="flex items-center gap-2">
                 <FormControl>
                   <Input
-                    placeholder="Enter note title"
+                    placeholder="note-url-slug"
                     {...field}
-                    onChange={(e) => {
-                      field.onChange(e);
-                    }}
+                    disabled
+                    className="bg-muted"
                   />
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => form.setValue("slug", generateSlug(title))}
+                  disabled={!title}
+                >
+                  <IconSparkles className="mr-2" />
+                  Generate
+                </Button>
+              </div>
+              <FormDescription>
+                This will be used in the URL. Click &quot;Generate&quot; to
+                create from title.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {/* Slug Field */}
-          <FormField
-            control={form.control}
-            name="slug"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                  <Link className="w-4 h-4" />
-                  URL Slug
-                </FormLabel>
-                <div className="flex items-center gap-2">
-                  <FormControl>
-                    <Input placeholder="note-url-slug" {...field} disabled />
-                  </FormControl>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() =>
-                      form.setValue(
-                        "slug",
-                        generateSlug(form.getValues("title"))
-                      )
-                    }
-                  >
-                    <IconSparkles />
-                    Generate Slug
-                  </Button>
-                </div>
-                <FormDescription>
-                  This will be used in the URL. Use lowercase letters, numbers,
-                  and hyphens only.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        {/* Content Field */}
+        <FormField
+          control={form.control}
+          name="content"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                <BookOpen className="w-4 h-4" />
+                Note Content
+              </FormLabel>
+              <FormControl>
+                <Editor
+                  editorSerializedState={JSON.parse(field.value)}
+                  onSerializedChange={(value) =>
+                    field.onChange(JSON.stringify(value))
+                  }
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {/* Content Field */}
-          <FormField
-            control={form.control}
-            name="content"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                  <BookOpen className="w-4 h-4" />
-                  Note Content
-                </FormLabel>
-                <FormControl>
-                  {/* <RichTextEditor
-                    value={field.value}
-                    onChange={field.onChange}
-                  /> */}
-                  <Editor
-                    editorSerializedState={JSON.parse(field.value)}
-                    onSerializedChange={(value) =>
-                      field.onChange(JSON.stringify(value))
-                    }
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        {/* Note Thumbnail */}
+        <FormField
+          control={form.control}
+          name="thumbnailKey"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                <IconImageInPicture className="w-4 h-4" />
+                Note Thumbnail
+              </FormLabel>
+              <FormControl>
+                <DNDFileUploader
+                  value={field.value}
+                  onChange={field.onChange}
+                  fileType="image"
+                />
+              </FormControl>
+              <FormDescription>
+                Upload an image to use as the note thumbnail.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          {/* Note Thumbnail */}
-          <FormField
-            control={form.control}
-            name="thumbnailKey"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                  <IconImageInPicture className="w-4 h-4" />
-                  Note Thumbnail
-                </FormLabel>
-                <FormControl>
-                  <DNDFileUploader
-                    value={field.value}
-                    onChange={field.onChange}
-                    fileType="image"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Attachments Field */}
+        {/* Attachments Section */}
+        <div className="space-y-4">
           <FormField
             control={form.control}
             name="attachments"
-            render={({ field }) => (
+            render={() => (
               <FormItem>
                 <FormLabel className="flex items-center gap-2 text-sm font-medium">
                   <Paperclip className="w-4 h-4" />
@@ -273,116 +301,154 @@ const NotesForm = () => {
             )}
           />
 
-          <div className="flex items-center gap-4">
-            {/* Class Select */}
-            <FormField
-              control={form.control}
-              name="class"
-              render={({ field }) => (
-                <FormItem className="basis-1/2">
-                  <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                    <BookOpen className="w-4 h-4" />
-                    Select Class
-                  </FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Class" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {classEnum.enumValues.map((value) => (
-                          <SelectItem
-                            key={value}
-                            value={value}
-                            className="capitalize"
-                          >
-                            {value.replaceAll("_", " ")}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          {/* Display added attachments */}
+          {attachments.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">
+                Added Attachments ({attachments.length})
+              </h4>
+              <div className="space-y-2">
+                {attachments.map((attachment) => (
+                  <div
+                    key={attachment.fileKey}
+                    className="flex items-center justify-between border p-3 rounded-md bg-muted/30"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Paperclip className="w-4 h-4 shrink-0 text-muted-foreground" />
+                      <span className="text-sm truncate">
+                        {attachment.fileName}
+                      </span>
+                      <span className="text-xs text-muted-foreground shrink-0">
+                        ({Math.round(attachment.fileSize / 1024)} KB)
+                      </span>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="shrink-0"
+                      onClick={() => handleRemoveAttachment(attachment.fileKey)}
+                    >
+                      <span className="sr-only">Remove attachment</span>
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
-            {/* Subject Select */}
-            <FormField
-              control={form.control}
-              name="subject"
-              render={({ field }) => (
-                <FormItem className="basis-1/2">
-                  <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                    <BookOpen className="w-4 h-4" />
-                    Select Subject
-                  </FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Subject" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {subjectEnum.enumValues.map((value) => (
-                          <SelectItem
-                            key={value}
-                            value={value}
-                            className="capitalize"
-                          >
-                            {value.replaceAll("_", " ")}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Published Status */}
+        {/* Class and Subject */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="isPublished"
+            name="class"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormItem>
+                <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                  <BookOpen className="w-4 h-4" />
+                  Class
+                </FormLabel>
                 <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select class" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {classEnum.enumValues.map((value) => (
+                        <SelectItem
+                          key={value}
+                          value={value}
+                          className="capitalize"
+                        >
+                          {value.replaceAll("_", " ")}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                    <FileText className="w-4 h-4" />
-                    Publish Note
-                  </FormLabel>
-                  <FormDescription>
-                    Make this note visible to users. You can change this later.
-                  </FormDescription>
-                </div>
+                <FormMessage />
               </FormItem>
             )}
           />
 
-          {/* Submit Button */}
-          <div className="flex justify-end pt-6">
-            <Button
-              type="submit"
-              size="lg"
-              className="px-8"
-              disabled={isCreatingNote}
-            >
-              {isCreatingNote && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              {isCreatingNote ? "Creating..." : "Create Note"}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+          <FormField
+            control={form.control}
+            name="subject"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                  <BookOpen className="w-4 h-4" />
+                  Subject
+                </FormLabel>
+                <FormControl>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select subject" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {subjectEnum.enumValues.map((value) => (
+                        <SelectItem
+                          key={value}
+                          value={value}
+                          className="capitalize"
+                        >
+                          {value.replaceAll("_", " ")}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* Published Status */}
+        <FormField
+          control={form.control}
+          name="isPublished"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className="space-y-1 leading-none">
+                <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                  <FileText className="w-4 h-4" />
+                  Publish Note
+                </FormLabel>
+                <FormDescription>
+                  Make this note visible to users immediately after creation.
+                </FormDescription>
+              </div>
+            </FormItem>
+          )}
+        />
+
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end gap-4 pt-4 border-t">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.push("/admin/notes")}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isCreatingNote}>
+            {isCreatingNote && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            {isCreatingNote ? "Creating..." : "Create Note"}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 };
 

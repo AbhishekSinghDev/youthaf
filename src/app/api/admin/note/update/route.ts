@@ -1,3 +1,4 @@
+import { invalidateNoteCacheOnChange } from "@/lib/cache-invalidation";
 import { NoteCreationSchema } from "@/lib/zod-schema";
 import { db } from "@/server/db";
 import { note, noteAttachments } from "@/server/db/schema";
@@ -63,6 +64,12 @@ export async function PUT(req: Request) {
         }))
       );
     }
+
+    // Invalidate cache for both old and new slugs (in case slug changed)
+    if (existingNote.slug !== data.slug) {
+      await invalidateNoteCacheOnChange(existingNote.slug);
+    }
+    await invalidateNoteCacheOnChange(data.slug);
 
     return NextResponse.json(
       { message: "Note updated successfully", status: "success" },

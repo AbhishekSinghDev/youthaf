@@ -1,3 +1,4 @@
+import { invalidateNoteCacheOnChange } from "@/lib/cache-invalidation";
 import { db } from "@/server/db";
 import { note } from "@/server/db/schema";
 import { requireAdmin } from "@/server/helper";
@@ -17,6 +18,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get the note slug for cache invalidation
+    const existingNote = await db.query.note.findFirst({
+      where: eq(note.id, id),
+      columns: { slug: true },
+    });
+
+    if (!existingNote) {
+      return NextResponse.json(
+        { message: "Note not found", status: "error" },
+        { status: 404 }
+      );
+    }
+
     await db
       .update(note)
       .set({
@@ -24,6 +38,9 @@ export async function POST(request: NextRequest) {
         updatedAt: new Date(),
       })
       .where(eq(note.id, id));
+
+    // Invalidate cache
+    await invalidateNoteCacheOnChange(existingNote.slug);
 
     return NextResponse.json(
       {

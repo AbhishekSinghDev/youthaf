@@ -5,7 +5,7 @@ interface NotesUpdatePageProps {
 }
 
 const NotesUpdatePage = async ({ params }: NotesUpdatePageProps) => {
-  const slug = (await params).slug;
+  const { slug } = await params;
 
   return <NotesForm slug={slug} />;
 };

@@ -120,7 +120,11 @@ export type AdminStats = {
     publishedCourses: number;
     totalNotes: number;
     publishedNotes: number;
+    draftNotes: number;
     totalViews: number;
+    notesLast7Days: number;
+    notesLast30Days: number;
+    usersLast7Days: number;
   };
   recentUsers: Array<{
     id: string;
@@ -132,11 +136,28 @@ export type AdminStats = {
   recentNotes: Array<{
     id: string;
     title: string;
+    slug: string;
     class: string;
     subject: string;
     views: string;
     isPublished: boolean;
     createdAt: Date;
+  }>;
+  recentDrafts: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    class: string;
+    subject: string;
+    createdAt: Date;
+  }>;
+  topViewedNotes: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    views: string;
+    class: string;
+    subject: string;
   }>;
   notesByClass: Array<{
     class: string;
@@ -144,6 +165,14 @@ export type AdminStats = {
   }>;
   notesBySubject: Array<{
     subject: string;
+    count: number;
+  }>;
+  notesPerDay: Array<{
+    date: string;
+    count: number;
+  }>;
+  publishStatusDistribution: Array<{
+    status: string;
     count: number;
   }>;
 };

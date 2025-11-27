@@ -1,7 +1,20 @@
+import { Pool } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-serverless";
+
 import { env } from "@/env";
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
-const sql = neon(env.DATABASE_URL);
-export const db = drizzle(sql, { schema });
+/**
+ * Cache the database connection in development. This avoids creating a new connection on every HMR
+ * update.
+ */
+const globalForDb = globalThis as unknown as {
+  pool: Pool | undefined;
+};
+
+const pool =
+  globalForDb.pool ?? new Pool({ connectionString: env.DATABASE_URL });
+
+if (env.NODE_ENV !== "production") globalForDb.pool = pool;
+
+export const db = drizzle(pool, { schema });

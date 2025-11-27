@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  ArrowLeft,
   BookOpen,
   FileText,
   Link,
@@ -10,12 +11,19 @@ import {
   Type,
   X,
 } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { Editor } from "@/components/blocks/editor-x/editor";
 import DNDFileUploader from "@/components/dnd-file-uploader/uploader";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -34,6 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ListNote } from "@/lib/type";
 import { constructFileUrl, generateSlug } from "@/lib/utils";
 import { NoteCreationSchema } from "@/lib/zod-schema";
@@ -41,12 +50,22 @@ import { classEnum, subjectEnum } from "@/server/db/schema";
 import { IconImageInPicture, IconSparkles } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import NextLink from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 interface NotesFormProps {
   slug: string;
 }
+
+// Extended schema to track existing attachment IDs
+type AttachmentWithId = {
+  id?: string; // Only present for existing attachments from DB
+  fileName: string;
+  fileKey: string;
+  fileSize: number;
+};
 
 const fetchNoteContent = async (slug: string): Promise<{ note: ListNote }> => {
   const response = await fetch(`/api/admin/note/by-slug?slug=${slug}`);
@@ -68,9 +87,18 @@ const fetchNoteContent = async (slug: string): Promise<{ note: ListNote }> => {
 };
 
 const NotesForm = ({ slug }: NotesFormProps) => {
-  const [isSettingValues, setIsSettingValues] = useState(true);
-  const [noteId, setNoteId] = useState<string | null>(null);
+  const router = useRouter();
   const queryClient = useQueryClient();
+  const [isInitialized, setIsInitialized] = useState(false);
+  const initializedSlugRef = useRef<string | null>(null);
+
+  // Track attachments with their IDs separately
+  const [attachmentsWithIds, setAttachmentsWithIds] = useState<
+    AttachmentWithId[]
+  >([]);
+  const [deletingAttachmentId, setDeletingAttachmentId] = useState<
+    string | null
+  >(null);
 
   const form = useForm<z.infer<typeof NoteCreationSchema>>({
     resolver: zodResolver(NoteCreationSchema),
@@ -86,7 +114,7 @@ const NotesForm = ({ slug }: NotesFormProps) => {
                   format: 0,
                   mode: "normal",
                   style: "",
-                  text: "Hello World 🚀",
+                  text: "",
                   type: "text",
                   version: 1,
                 },
@@ -111,10 +139,11 @@ const NotesForm = ({ slug }: NotesFormProps) => {
     },
   });
 
-  const { data, isError, isLoading } = useQuery({
+  const { data, isError, isLoading, error } = useQuery({
     queryKey: ["adminNoteContent", slug],
     queryFn: () => fetchNoteContent(slug),
     retry: 1,
+    staleTime: 30000, // Don't refetch for 30 seconds
   });
 
   const { mutate: updateNote, isPending: isUpdatingNote } = useMutation({
@@ -136,37 +165,60 @@ const NotesForm = ({ slug }: NotesFormProps) => {
 
       return response.json();
     },
+    onSuccess: () => {
+      toast.success("Note updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      queryClient.invalidateQueries({ queryKey: ["adminNoteContent", slug] });
+    },
+    onError: () => {
+      toast.error("Failed to update note");
+    },
   });
 
-  const { mutate: deleteAttachment, isPending: isDeletingAttachment } =
-    useMutation({
-      mutationKey: ["delete-attachment"],
-      mutationFn: async (attachmentId: string) => {
-        const response = await fetch("/api/admin/note/attachment/delete", {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            attachmentId,
-          }),
-        });
+  const { mutate: deleteAttachment } = useMutation({
+    mutationKey: ["delete-attachment"],
+    mutationFn: async (attachmentId: string) => {
+      setDeletingAttachmentId(attachmentId);
+      const response = await fetch("/api/admin/note/attachment/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ attachmentId }),
+      });
 
-        if (!response.ok) {
-          throw new Error("Failed to delete attachment");
-        }
+      if (!response.ok) {
+        throw new Error("Failed to delete attachment");
+      }
 
-        return response.json();
-      },
-      onSuccess: () => {
-        toast.success("Attachment deleted successfully");
-        // Invalidate and refetch the note data
-        queryClient.invalidateQueries({ queryKey: ["adminNoteContent", slug] });
-      },
-      onError: () => {
-        toast.error("Failed to delete attachment");
-      },
-    });
+      return response.json();
+    },
+    onSuccess: (_, deletedId) => {
+      toast.success("Attachment deleted successfully");
+      // Remove from local state immediately
+      setAttachmentsWithIds((prev) =>
+        prev.filter((att) => att.id !== deletedId)
+      );
+      // Also update form state
+      const currentAttachments = form.getValues("attachments") || [];
+      const deletedAttachment = attachmentsWithIds.find(
+        (att) => att.id === deletedId
+      );
+      if (deletedAttachment) {
+        form.setValue(
+          "attachments",
+          currentAttachments.filter(
+            (att) => att.fileKey !== deletedAttachment.fileKey
+          )
+        );
+      }
+      setDeletingAttachmentId(null);
+    },
+    onError: () => {
+      toast.error("Failed to delete attachment");
+      setDeletingAttachmentId(null);
+    },
+  });
 
   const { mutate: deleteThumbnail, isPending: isDeletingThumbnail } =
     useMutation({
@@ -177,9 +229,7 @@ const NotesForm = ({ slug }: NotesFormProps) => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            key: thumbnailKey,
-          }),
+          body: JSON.stringify({ key: thumbnailKey }),
         });
 
         if (!response.ok) {
@@ -190,6 +240,7 @@ const NotesForm = ({ slug }: NotesFormProps) => {
       },
       onSuccess: () => {
         toast.success("Thumbnail deleted successfully");
+        form.setValue("thumbnailKey", "");
       },
       onError: () => {
         toast.error("Failed to delete thumbnail");
@@ -197,38 +248,48 @@ const NotesForm = ({ slug }: NotesFormProps) => {
     });
 
   const onSubmit = (values: z.infer<typeof NoteCreationSchema>) => {
-    if (noteId) {
-      updateNote(
-        { ...values, id: noteId },
-        {
-          onSuccess: () => {
-            toast.success("Note updated successfully!");
-          },
-          onError: () => {
-            toast.error("Failed to update note");
-          },
-        }
-      );
+    if (data?.note?.id) {
+      updateNote({ ...values, id: data.note.id });
     }
   };
 
-  const deleteFile = async (attachmentId: string) => {
-    deleteAttachment(attachmentId);
-  };
+  const handleAttachmentAdd = useCallback(
+    (fileKey: string, fileName: string, fileSize: number) => {
+      const newAttachment: AttachmentWithId = {
+        fileName,
+        fileKey,
+        fileSize,
+      };
 
-  const handleAttachmentAdd = (
-    fileKey: string,
-    fileName: string,
-    fileSize: number
-  ) => {
-    const currentAttachments = form.getValues("attachments") || [];
-    const newAttachment = {
-      fileName,
-      fileKey,
-      fileSize,
-    };
-    form.setValue("attachments", [...currentAttachments, newAttachment]);
-  };
+      // Add to local state
+      setAttachmentsWithIds((prev) => [...prev, newAttachment]);
+
+      // Add to form state
+      const currentAttachments = form.getValues("attachments") || [];
+      form.setValue("attachments", [
+        ...currentAttachments,
+        { fileName, fileKey, fileSize },
+      ]);
+    },
+    [form]
+  );
+
+  const handleRemoveNewAttachment = useCallback(
+    (fileKey: string) => {
+      // Remove from local state (for new attachments without ID)
+      setAttachmentsWithIds((prev) =>
+        prev.filter((att) => att.fileKey !== fileKey)
+      );
+
+      // Remove from form state
+      const currentAttachments = form.getValues("attachments") || [];
+      form.setValue(
+        "attachments",
+        currentAttachments.filter((att) => att.fileKey !== fileKey)
+      );
+    },
+    [form]
+  );
 
   const handleThumbnailChange = (newThumbnailKey: string) => {
     const currentThumbnailKey = form.getValues("thumbnailKey");
@@ -238,24 +299,30 @@ const NotesForm = ({ slug }: NotesFormProps) => {
       deleteThumbnail(currentThumbnailKey);
     }
 
-    // Update the form with the new thumbnail
     form.setValue("thumbnailKey", newThumbnailKey);
   };
 
   const handleThumbnailDelete = () => {
     const currentThumbnailKey = form.getValues("thumbnailKey");
     if (currentThumbnailKey) {
-      deleteThumbnail(currentThumbnailKey, {
-        onSuccess: () => {
-          form.setValue("thumbnailKey", "");
-        },
-      });
+      deleteThumbnail(currentThumbnailKey);
     }
   };
 
+  // Initialize form only once when data is first loaded
   useEffect(() => {
-    if (data?.note) {
-      setNoteId(data.note.id);
+    if (data?.note && !isInitialized && initializedSlugRef.current !== slug) {
+      initializedSlugRef.current = slug;
+
+      const attachments =
+        data.note.attachments?.map((att) => ({
+          id: att.id,
+          fileName: att.fileName,
+          fileKey: att.fileKey,
+          fileSize: Number(att.fileSize),
+        })) || [];
+
+      setAttachmentsWithIds(attachments);
 
       form.reset({
         title: data.note.title,
@@ -265,352 +332,448 @@ const NotesForm = ({ slug }: NotesFormProps) => {
         class: data.note.class || undefined,
         subject: data.note.subject || undefined,
         isPublished: data.note.isPublished,
-        attachments:
-          data.note.attachments?.map((att) => ({
-            fileName: att.fileName,
-            fileKey: att.fileKey,
-            fileSize: Number(att.fileSize),
-          })) || [],
+        attachments: attachments.map(({ fileName, fileKey, fileSize }) => ({
+          fileName,
+          fileKey,
+          fileSize,
+        })),
       });
 
-      setIsSettingValues(false);
+      setIsInitialized(true);
     }
-  }, [data, form]);
+  }, [data, form, isInitialized, slug]);
 
-  if (isLoading || isSettingValues) return <div>Loading note data...</div>;
-  if (isError) return <div>Error loading note data</div>;
+  // Watch thumbnail for preview
+  const thumbnailKey = useWatch({
+    control: form.control,
+    name: "thumbnailKey",
+  });
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-10 w-10" />
+          <Skeleton className="h-8 w-48" />
+        </div>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="h-4 w-64" />
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-40 w-full" />
+            <Skeleton className="h-32 w-full" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <NextLink
+            href="/admin/notes"
+            className={buttonVariants({ size: "icon", variant: "outline" })}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </NextLink>
+          <h1 className="text-2xl font-bold">Edit Note</h1>
+        </div>
+        <Card className="border-destructive">
+          <CardContent className="pt-6">
+            <div className="text-center text-destructive">
+              <p className="font-medium">Failed to load note</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {error instanceof Error ? error.message : "An error occurred"}
+              </p>
+              <Button
+                variant="outline"
+                className="mt-4"
+                onClick={() => router.push("/admin/notes")}
+              >
+                Back to Notes
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Title Field */}
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                  <Type className="w-4 h-4" />
-                  Note Title
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Enter note title"
-                    {...field}
-                    onChange={(e) => {
-                      field.onChange(e);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <NextLink
+          href="/admin/notes"
+          className={buttonVariants({ size: "icon", variant: "outline" })}
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </NextLink>
+        <h1 className="text-2xl font-bold">Edit Note</h1>
+      </div>
 
-          {/* Slug Field */}
-          <FormField
-            control={form.control}
-            name="slug"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                  <Link className="w-4 h-4" />
-                  URL Slug
-                </FormLabel>
-                <div className="flex items-center gap-2">
-                  <FormControl>
-                    <Input placeholder="note-url-slug" {...field} disabled />
-                  </FormControl>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() =>
-                      form.setValue(
-                        "slug",
-                        generateSlug(form.getValues("title"))
-                      )
-                    }
-                  >
-                    <IconSparkles />
-                    Generate Slug
-                  </Button>
-                </div>
-                <FormDescription>
-                  This will be used in the URL. Use lowercase letters, numbers,
-                  and hyphens only. (Cannot be changed after creation)
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+      <Card>
+        <CardHeader>
+          <CardTitle>Note Details</CardTitle>
+          <CardDescription>Update the note information below.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Title Field */}
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                      <Type className="w-4 h-4" />
+                      Note Title
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter note title" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          {/* Content Field */}
-          <FormField
-            control={form.control}
-            name="content"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                  <BookOpen className="w-4 h-4" />
-                  Note Content
-                </FormLabel>
-                <FormControl>
-                  <Editor
-                    editorSerializedState={JSON.parse(field.value)}
-                    onSerializedChange={(value) =>
-                      field.onChange(JSON.stringify(value))
-                    }
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              {/* Slug Field */}
+              <FormField
+                control={form.control}
+                name="slug"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                      <Link className="w-4 h-4" />
+                      URL Slug
+                    </FormLabel>
+                    <div className="flex items-center gap-2">
+                      <FormControl>
+                        <Input
+                          placeholder="note-url-slug"
+                          {...field}
+                          disabled
+                          className="bg-muted"
+                        />
+                      </FormControl>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() =>
+                          form.setValue(
+                            "slug",
+                            generateSlug(form.getValues("title"))
+                          )
+                        }
+                        disabled
+                      >
+                        <IconSparkles className="mr-2" />
+                        Generate
+                      </Button>
+                    </div>
+                    <FormDescription>
+                      The URL slug cannot be changed after creation.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <div className="space-y-4">
-            {/* Note Thumbnail */}
-            <FormField
-              control={form.control}
-              name="thumbnailKey"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                    <IconImageInPicture className="w-4 h-4" />
-                    Note Thumbnail
-                  </FormLabel>
-                  <FormControl>
-                    <DNDFileUploader
-                      value={field.value}
-                      onChange={handleThumbnailChange}
-                      onDelete={handleThumbnailDelete}
-                      fileType="image"
-                      allowReplacement={true}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Upload an image to use as the note thumbnail. Maximum file
-                    size: 5MB.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Content Field */}
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                      <BookOpen className="w-4 h-4" />
+                      Note Content
+                    </FormLabel>
+                    <FormControl>
+                      <Editor
+                        editorSerializedState={JSON.parse(field.value)}
+                        onSerializedChange={(value) =>
+                          field.onChange(JSON.stringify(value))
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Current Thumbnail Preview */}
-            {form.getValues("thumbnailKey") && (
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium">Current Thumbnail</h4>
-                <div className="relative w-full max-w-md mx-auto">
-                  <div className="aspect-video w-full overflow-hidden rounded-lg border bg-muted">
-                    <Image
-                      src={constructFileUrl(form.getValues("thumbnailKey"))}
-                      alt="Note thumbnail preview"
-                      width={400}
-                      height={225}
-                      className="w-full h-full object-cover"
-                      priority
-                    />
+              {/* Thumbnail Section */}
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="thumbnailKey"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                        <IconImageInPicture className="w-4 h-4" />
+                        Note Thumbnail
+                      </FormLabel>
+                      <FormControl>
+                        <DNDFileUploader
+                          value={field.value}
+                          onChange={handleThumbnailChange}
+                          onDelete={handleThumbnailDelete}
+                          fileType="image"
+                          allowReplacement={true}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Upload an image to use as the note thumbnail.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {thumbnailKey && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium">Thumbnail Preview</h4>
+                    <div className="relative w-full max-w-md">
+                      <div className="aspect-video w-full overflow-hidden rounded-lg border bg-muted">
+                        <Image
+                          src={constructFileUrl(thumbnailKey)}
+                          alt="Note thumbnail preview"
+                          width={400}
+                          height={225}
+                          className="w-full h-full object-cover"
+                          priority
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-2 right-2"
+                        onClick={handleThumbnailDelete}
+                        disabled={isDeletingThumbnail}
+                      >
+                        {isDeletingThumbnail ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <X className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    className="absolute top-2 right-2"
-                    onClick={handleThumbnailDelete}
-                    disabled={isDeletingThumbnail}
-                  >
-                    {isDeletingThumbnail ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <X className="w-4 h-4" />
-                    )}
-                  </Button>
-                </div>
+                )}
               </div>
-            )}
-          </div>
 
-          {/* Attachments Field */}
-          <FormField
-            control={form.control}
-            name="attachments"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                  <Paperclip className="w-4 h-4" />
-                  PDF Attachments
-                </FormLabel>
-                <FormControl>
-                  <DNDFileUploader
-                    value=""
-                    onChange={(
-                      fileKey: string,
-                      fileName?: string,
-                      fileSize?: number
-                    ) => {
-                      if (fileKey && fileName && fileSize) {
-                        handleAttachmentAdd(fileKey, fileName, fileSize);
-                      }
-                    }}
-                    fileType="document"
-                  />
-                </FormControl>
-                <FormDescription>
-                  Upload PDF files as attachments. Maximum file size: 10MB per
-                  file.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              {/* Attachments Section */}
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="attachments"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                        <Paperclip className="w-4 h-4" />
+                        PDF Attachments
+                      </FormLabel>
+                      <FormControl>
+                        <DNDFileUploader
+                          value=""
+                          onChange={(
+                            fileKey: string,
+                            fileName?: string,
+                            fileSize?: number
+                          ) => {
+                            if (fileKey && fileName && fileSize) {
+                              handleAttachmentAdd(fileKey, fileName, fileSize);
+                            }
+                          }}
+                          fileType="document"
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Upload PDF files as attachments. Maximum file size: 10MB
+                        per file.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-          {/* Render Attachments */}
-          {data?.note?.attachments && data.note.attachments.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">Current Attachments</h4>
-              {data.note.attachments.map((attachment) => (
-                <div
-                  key={attachment.id}
-                  className="flex items-center justify-between border p-2 rounded"
-                >
-                  <div className="flex items-center gap-2">
-                    <Paperclip className="w-4 h-4" />
-                    <span className="text-sm line-clamp-1">
-                      {attachment.fileName}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      ({Math.round(Number(attachment.fileSize) / 1024)} KB)
-                    </span>
+                {/* Display all attachments (both existing and new) */}
+                {attachmentsWithIds.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium">
+                      Attachments ({attachmentsWithIds.length})
+                    </h4>
+                    <div className="space-y-2">
+                      {attachmentsWithIds.map((attachment) => (
+                        <div
+                          key={attachment.id || attachment.fileKey}
+                          className="flex items-center justify-between border p-3 rounded-md bg-muted/30"
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <Paperclip className="w-4 h-4 shrink-0 text-muted-foreground" />
+                            <span className="text-sm truncate">
+                              {attachment.fileName}
+                            </span>
+                            <span className="text-xs text-muted-foreground shrink-0">
+                              ({Math.round(attachment.fileSize / 1024)} KB)
+                            </span>
+                            {!attachment.id && (
+                              <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                                New
+                              </span>
+                            )}
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="shrink-0"
+                            onClick={() =>
+                              attachment.id
+                                ? deleteAttachment(attachment.id)
+                                : handleRemoveNewAttachment(attachment.fileKey)
+                            }
+                            disabled={deletingAttachmentId === attachment.id}
+                          >
+                            <span className="sr-only">Remove attachment</span>
+                            {deletingAttachmentId === attachment.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <X className="w-4 h-4" />
+                            )}
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => deleteFile(attachment.id)}
-                    disabled={isDeletingAttachment}
-                  >
-                    <span className="sr-only">Remove attachment</span>
-                    {isDeletingAttachment ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <X className="w-4 h-4" />
-                    )}
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
+                )}
+              </div>
 
-          <div className="flex items-center gap-4">
-            {/* Class Select */}
-            <FormField
-              control={form.control}
-              name="class"
-              render={({ field }) => (
-                <FormItem className="basis-1/2">
-                  <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                    <BookOpen className="w-4 h-4" />
-                    Select Class
-                  </FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Class" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {classEnum.enumValues.map((value) => (
-                          <SelectItem
-                            key={value}
-                            value={value}
-                            className="capitalize"
-                          >
-                            {value.replaceAll("_", " ")}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Class and Subject */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="class"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                        <BookOpen className="w-4 h-4" />
+                        Class
+                      </FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select class" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {classEnum.enumValues.map((value) => (
+                              <SelectItem
+                                key={value}
+                                value={value}
+                                className="capitalize"
+                              >
+                                {value.replaceAll("_", " ")}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            {/* Subject Select */}
-            <FormField
-              control={form.control}
-              name="subject"
-              render={({ field }) => (
-                <FormItem className="basis-1/2">
-                  <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                    <BookOpen className="w-4 h-4" />
-                    Select Subject
-                  </FormLabel>
-                  <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Subject" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {subjectEnum.enumValues.map((value) => (
-                          <SelectItem
-                            key={value}
-                            value={value}
-                            className="capitalize"
-                          >
-                            {value.replaceAll("_", " ")}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+                <FormField
+                  control={form.control}
+                  name="subject"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                        <BookOpen className="w-4 h-4" />
+                        Subject
+                      </FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select subject" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {subjectEnum.enumValues.map((value) => (
+                              <SelectItem
+                                key={value}
+                                value={value}
+                                className="capitalize"
+                              >
+                                {value.replaceAll("_", " ")}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-          {/* Published Status */}
-          <FormField
-            control={form.control}
-            name="isPublished"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel className="flex items-center gap-2 text-sm font-medium">
-                    <FileText className="w-4 h-4" />
-                    Publish Note
-                  </FormLabel>
-                  <FormDescription>
-                    Make this note visible to users. You can change this later.
-                  </FormDescription>
-                </div>
-              </FormItem>
-            )}
-          />
+              {/* Published Status */}
+              <FormField
+                control={form.control}
+                name="isPublished"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="flex items-center gap-2 text-sm font-medium">
+                        <FileText className="w-4 h-4" />
+                        Publish Note
+                      </FormLabel>
+                      <FormDescription>
+                        Make this note visible to users.
+                      </FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
 
-          {/* Submit Button */}
-          <div className="flex justify-end pt-6">
-            <Button
-              type="submit"
-              size="lg"
-              className="px-8"
-              disabled={isUpdatingNote}
-            >
-              {isUpdatingNote && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              {isUpdatingNote ? "Updating..." : "Update Note"}
-            </Button>
-          </div>
-        </form>
-      </Form>
+              {/* Action Buttons */}
+              <div className="flex items-center justify-end gap-4 pt-4 border-t">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => router.push("/admin/notes")}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isUpdatingNote}>
+                  {isUpdatingNote && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  {isUpdatingNote ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

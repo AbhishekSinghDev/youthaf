@@ -1,7 +1,7 @@
 import { db } from "@/server/db";
 import { course, note, user } from "@/server/db/schema";
 import { requireAdmin } from "@/server/helper";
-import { count, desc, eq, sum } from "drizzle-orm";
+import { count, desc, eq, gte, sql, sum } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -40,11 +40,45 @@ export async function GET() {
       .where(eq(note.isPublished, true))
       .then((res) => res[0]?.count || 0);
 
+    // Draft notes count
+    const draftNotes = await db
+      .select({ count: count() })
+      .from(note)
+      .where(eq(note.isPublished, false))
+      .then((res) => res[0]?.count || 0);
+
     // Total note views
     const totalViews = await db
       .select({ total: sum(note.views) })
       .from(note)
       .then((res) => res[0]?.total || "0");
+
+    // Notes created in last 7 days
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const notesLast7Days = await db
+      .select({ count: count() })
+      .from(note)
+      .where(gte(note.createdAt, sevenDaysAgo))
+      .then((res) => res[0]?.count || 0);
+
+    // Notes created in last 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const notesLast30Days = await db
+      .select({ count: count() })
+      .from(note)
+      .where(gte(note.createdAt, thirtyDaysAgo))
+      .then((res) => res[0]?.count || 0);
+
+    // Users created in last 7 days
+    const usersLast7Days = await db
+      .select({ count: count() })
+      .from(user)
+      .where(gte(user.createdAt, sevenDaysAgo))
+      .then((res) => res[0]?.count || 0);
 
     // Recent users
     const recentUsers = await db
@@ -59,11 +93,12 @@ export async function GET() {
       .orderBy(desc(user.createdAt))
       .limit(5);
 
-    // Recent notes
+    // Recent notes (including slug for linking)
     const recentNotes = await db
       .select({
         id: note.id,
         title: note.title,
+        slug: note.slug,
         class: note.class,
         subject: note.subject,
         views: note.views,
@@ -72,6 +107,36 @@ export async function GET() {
       })
       .from(note)
       .orderBy(desc(note.createdAt))
+      .limit(5);
+
+    // Recent draft notes (for quick publish feature)
+    const recentDrafts = await db
+      .select({
+        id: note.id,
+        title: note.title,
+        slug: note.slug,
+        class: note.class,
+        subject: note.subject,
+        createdAt: note.createdAt,
+      })
+      .from(note)
+      .where(eq(note.isPublished, false))
+      .orderBy(desc(note.createdAt))
+      .limit(5);
+
+    // Top viewed notes
+    const topViewedNotes = await db
+      .select({
+        id: note.id,
+        title: note.title,
+        slug: note.slug,
+        views: note.views,
+        class: note.class,
+        subject: note.subject,
+      })
+      .from(note)
+      .where(eq(note.isPublished, true))
+      .orderBy(desc(note.views))
       .limit(5);
 
     // Notes by class distribution
@@ -92,6 +157,23 @@ export async function GET() {
       .from(note)
       .groupBy(note.subject);
 
+    // Notes created per day for last 7 days (for line chart)
+    const notesPerDay = await db
+      .select({
+        date: sql<string>`DATE(${note.createdAt})`.as("date"),
+        count: count(),
+      })
+      .from(note)
+      .where(gte(note.createdAt, sevenDaysAgo))
+      .groupBy(sql`DATE(${note.createdAt})`)
+      .orderBy(sql`DATE(${note.createdAt})`);
+
+    // Publish status distribution (for pie chart)
+    const publishStatusDistribution = [
+      { status: "Published", count: publishedNotes },
+      { status: "Draft", count: draftNotes },
+    ];
+
     return NextResponse.json(
       {
         stats: {
@@ -100,12 +182,20 @@ export async function GET() {
           publishedCourses,
           totalNotes,
           publishedNotes,
+          draftNotes,
           totalViews: parseInt(totalViews),
+          notesLast7Days,
+          notesLast30Days,
+          usersLast7Days,
         },
         recentUsers,
         recentNotes,
+        recentDrafts,
+        topViewedNotes,
         notesByClass,
         notesBySubject,
+        notesPerDay,
+        publishStatusDistribution,
       },
       { status: 200 }
     );
